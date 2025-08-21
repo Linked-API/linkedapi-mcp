@@ -1,4 +1,4 @@
-[Linked API](https://linkedapi.io/?ref=linkedapi-mcp) MCP server connects your LinkedIn account to AI assistants like Claude, Cursor, and VS Code. Ask them to search for leads, send messages, analyze profiles, and much more – they'll handle it through our cloud browser, safely and automatically.
+Linked API MCP server connects your LinkedIn account to AI assistants like Claude, Cursor, and VS Code. Ask them to search for leads, send messages, analyze profiles, and much more – they'll handle it through our cloud browser, safely and automatically.
 
 # Use cases
 - **Sales automation assistant**. Ask your AI to find leads, check their profiles, and draft personalized outreach. It can search for "software engineers at companies with 50-200 employees in San Francisco", analyze their backgrounds, and suggest connection messages that actually make sense.
