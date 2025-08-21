@@ -148,14 +148,19 @@ The MCP server provides these tools for interacting with LinkedIn:
 
 # Usage examples
 With Linked API MCP, you can ask your AI-assistant things like:
+> [!TIP]
 > Find all decision makers at Acme Corp and send them connection requests.
 
+> [!TIP]
 > Search for product managers at fintech companies in New York with 50-200 employees.
 
+> [!TIP]
 > Tell me about 'https[]()://linkedin.com/in/jane-doe' including their work history and experience.
 
+> [!TIP]
 > Send a connection request to 'https[]()://linkedin.com/in/jane-doe' mentioning their recent article about AI in healthcare.
 
+> [!TIP]
 > Get all my pending connection requests and withdraw each one of them.
 
 These are just basic examples. Since your assistant can execute custom workflows combining multiple actions, the automation potential is truly limitless.
