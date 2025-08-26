@@ -1,31 +1,31 @@
 #!/usr/bin/env node
-
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
-  ListPromptsRequestSchema,
   GetPromptRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
-import { LinkedApiMCPServer } from "./linked-api-server";
-import { debugLog } from "./utils/debug-log";
-import { systemPrompt, availablePrompts, getPromptContent } from "./prompts";
+  ListPromptsRequestSchema,
+  ListToolsRequestSchema,
+} from '@modelcontextprotocol/sdk/types.js';
+
+import { LinkedApiMCPServer } from './linked-api-server';
+import { availablePrompts, getPromptContent, systemPrompt } from './prompts';
+import { debugLog } from './utils/debug-log';
 
 async function main() {
   const linkedApiToken = process.env.LINKED_API_TOKEN;
   const identificationToken = process.env.IDENTIFICATION_TOKEN;
 
-  debugLog("Environment variables loaded", {
+  debugLog('Environment variables loaded', {
     hasLinkedApiToken: !!linkedApiToken,
     hasIdentificationToken: !!identificationToken,
   });
 
   const server = new Server(
     {
-      name: "linkedapi-mcp",
-      version: "1.0.0",
-      description: "MCP Server for Linked API (https://linkedapi.io)",
+      name: 'linkedapi-mcp',
+      version: '1.0.0',
+      description: 'MCP Server for Linked API (https://linkedapi.io)',
     },
     {
       capabilities: {
@@ -36,18 +36,18 @@ async function main() {
     },
   );
 
-  debugLog("Creating LinkedApiMCPServer instance...");
+  debugLog('Creating LinkedApiMCPServer instance...');
   const linkedApiServer = new LinkedApiMCPServer({
     linkedApiToken,
     identificationToken,
   });
 
   linkedApiServer.setProgressCallback((notification) => {
-    debugLog("Progress notification", {
+    debugLog('Progress notification', {
       message: `${notification.progressToken} ${notification.progress}%`,
     });
     void server.notification({
-      method: "notifications/progress",
+      method: 'notifications/progress',
       params: {
         progressToken: notification.progressToken,
         progress: notification.progress,
@@ -76,18 +76,15 @@ async function main() {
     const { name } = request.params;
 
     try {
-      const content =
-        name === "performance_guidelines"
-          ? systemPrompt
-          : getPromptContent(name);
+      const content = name === 'performance_guidelines' ? systemPrompt : getPromptContent(name);
 
       return {
-        description: `Linked API MCP: ${name.replace("_", " ")}`,
+        description: `Linked API MCP: ${name.replace('_', ' ')}`,
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: {
-              type: "text",
+              type: 'text',
               text: content,
             },
           },
@@ -99,7 +96,7 @@ async function main() {
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    debugLog("Tool request received", {
+    debugLog('Tool request received', {
       toolName: request.params.name,
       arguments: request.params.arguments,
       progressToken: request.params._meta?.progressToken,
@@ -107,13 +104,13 @@ async function main() {
 
     try {
       const result = await linkedApiServer.callTool(request.params);
-      debugLog("Tool execution completed successfully", {
+      debugLog('Tool execution completed successfully', {
         toolName: request.params.name,
         resultType: typeof result.content,
       });
       return result;
     } catch (error) {
-      debugLog("Tool execution failed", {
+      debugLog('Tool execution failed', {
         toolName: request.params.name,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -125,6 +122,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  debugLog("Fatal error in main()", error);
+  debugLog('Fatal error in main()', error);
   process.exit(1);
 });

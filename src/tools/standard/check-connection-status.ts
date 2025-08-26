@@ -1,27 +1,24 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { checkConnectionStatusSchema } from "../../linked-api-schemas.js";
-import LinkedApi, { TCheckConnectionStatusParams } from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi, { TCheckConnectionStatusParams } from 'linkedapi-node';
+
+import { checkConnectionStatusSchema } from '../../linked-api-schemas.js';
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getCheckConnectionStatusTool = (): Tool => ({
-  name: "check_connection_status",
+  name: 'check_connection_status',
   description:
-    "Allows you to check the connection status between your account and another person (st.checkConnectionStatus action).",
+    'Allows you to check the connection status between your account and another person (st.checkConnectionStatus action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {
       personUrl: {
-        type: "string",
+        type: 'string',
         description:
           "Public or hashed LinkedIn URL of the person you want to check the connection status with. (e.g., 'https://www.linkedin.com/in/john-doe')",
       },
     },
-    required: ["personUrl"],
+    required: ['personUrl'],
   },
 });
 
@@ -30,20 +27,18 @@ const checkConnectionStatus = async (
   args: unknown,
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
-  const params = checkConnectionStatusSchema.parse(args);
-  const progressToken = "check_connection_status";
-  const workflow = await linkedapi.checkConnectionStatus(
-    params as TCheckConnectionStatusParams,
-  );
+  const params = checkConnectionStatusSchema.parse(args) as TCheckConnectionStatusParams;
+  const progressToken = 'check_connection_status';
   const result = await executeWithProgress(
     progressToken,
     progressCallback,
-    workflow,
+    linkedapi.checkConnectionStatus,
+    params,
   );
   return {
     content: [
       {
-        type: "text",
+        type: 'text',
         text: JSON.stringify(result, null, 2),
       },
     ],

@@ -1,19 +1,16 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { retrievePendingRequestsSchema } from "../../linked-api-schemas.js";
-import LinkedApi from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi from 'linkedapi-node';
+
+import { retrievePendingRequestsSchema } from '../../linked-api-schemas.js';
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getRetrievePendingRequestsTool = (): Tool => ({
-  name: "retrieve_pending_requests",
+  name: 'retrieve_pending_requests',
   description:
-    "Allows you to retrieve pending connection requests sent from your account. (st.retrievePendingRequests action).",
+    'Allows you to retrieve pending connection requests sent from your account. (st.retrievePendingRequests action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {},
   },
 });
@@ -24,17 +21,16 @@ const retrievePendingRequests = async (
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
   retrievePendingRequestsSchema.parse(_args ?? {});
-  const progressToken = "retrieve_pending_requests";
-  const workflow = await linkedapi.retrievePendingRequests();
+  const progressToken = 'retrieve_pending_requests';
   const result = await executeWithProgress(
     progressToken,
     progressCallback,
-    workflow,
+    linkedapi.retrievePendingRequests,
   );
   return {
     content: [
       {
-        type: "text",
+        type: 'text',
         text: JSON.stringify(result, null, 2),
       },
     ],

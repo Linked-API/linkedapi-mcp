@@ -1,32 +1,29 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { reactToPostSchema } from "../../linked-api-schemas.js";
-import LinkedApi, { TReactToPostParams } from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi, { TReactToPostParams } from 'linkedapi-node';
+
+import { reactToPostSchema } from '../../linked-api-schemas.js';
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getReactToPostTool = (): Tool => ({
-  name: "react_to_post",
+  name: 'react_to_post',
   description:
-    "Allows you to react to a post using any available reaction type (st.reactToPost action).",
+    'Allows you to react to a post using any available reaction type (st.reactToPost action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {
       postUrl: {
-        type: "string",
+        type: 'string',
         description:
           "LinkedIn URL of the post to react. (e.g., 'https://www.linkedin.com/posts/username_activity-id')",
       },
       type: {
-        type: "string",
-        description: "Enum describing the reaction type.",
-        enum: ["like", "love", "support", "celebrate", "insightful", "funny"],
+        type: 'string',
+        description: 'Enum describing the reaction type.',
+        enum: ['like', 'love', 'support', 'celebrate', 'insightful', 'funny'],
       },
     },
-    required: ["postUrl", "type"],
+    required: ['postUrl', 'type'],
   },
 });
 
@@ -35,15 +32,14 @@ const reactToPost = async (
   args: unknown,
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
-  const params = reactToPostSchema.parse(args);
-  const progressToken = "react_to_post";
-  const workflow = await linkedapi.reactToPost(params as TReactToPostParams);
-  await executeWithProgress(progressToken, progressCallback, workflow);
+  const params = reactToPostSchema.parse(args) as TReactToPostParams;
+  const progressToken = 'react_to_post';
+  await executeWithProgress(progressToken, progressCallback, linkedapi.reactToPost, params);
   return {
     content: [
       {
-        type: "text",
-        text: "Reaction added",
+        type: 'text',
+        text: 'Reaction added',
       },
     ],
   };

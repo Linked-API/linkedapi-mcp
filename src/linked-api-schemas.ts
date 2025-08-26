@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { OPERATION_NAME } from 'linkedapi-node';
+import { z } from 'zod';
 
 export const retrieveConnectionsSchema = z.object({
   limit: z.number().min(1).max(100).optional(),
@@ -15,9 +16,7 @@ export const retrieveConnectionsSchema = z.object({
     })
     .optional(),
 });
-export type RetrieveConnectionsInput = z.infer<
-  typeof retrieveConnectionsSchema
->;
+export type RetrieveConnectionsInput = z.infer<typeof retrieveConnectionsSchema>;
 
 export const removeConnectionSchema = z.object({
   personUrl: z.string(),
@@ -46,7 +45,7 @@ export const pollConversationsSchema = z.object({
   conversations: z.array(
     z.object({
       personUrl: z.string(),
-      type: z.enum(["st", "nv"]).default("st"),
+      type: z.enum(['st', 'nv']).default('st'),
       since: z.string().optional(),
     }),
   ),
@@ -156,14 +155,14 @@ export const searchCompaniesSchema = z.object({
       sizes: z
         .array(
           z.enum([
-            "1-10",
-            "11-50",
-            "51-200",
-            "201-500",
-            "501-1000",
-            "1001-5000",
-            "5001-10000",
-            "10001+",
+            '1-10',
+            '11-50',
+            '51-200',
+            '201-500',
+            '501-1000',
+            '1001-5000',
+            '5001-10000',
+            '10001+',
           ]),
         )
         .optional(),
@@ -181,14 +180,14 @@ export const nvSearchCompaniesSchema = z.object({
       sizes: z
         .array(
           z.enum([
-            "1-10",
-            "11-50",
-            "51-200",
-            "201-500",
-            "501-1000",
-            "1001-5000",
-            "5001-10000",
-            "10001+",
+            '1-10',
+            '11-50',
+            '51-200',
+            '201-500',
+            '501-1000',
+            '1001-5000',
+            '5001-10000',
+            '10001+',
           ]),
         )
         .optional(),
@@ -254,9 +253,7 @@ export const retrievePendingRequestsSchema = z.object({});
 
 export const reactToPostSchema = z.object({
   postUrl: z.string(),
-  type: z
-    .enum(["like", "love", "celebrate", "support", "funny", "insightful"])
-    .or(z.string()),
+  type: z.enum(['like', 'love', 'celebrate', 'support', 'funny', 'insightful']).or(z.string()),
 });
 
 export const commentOnPostSchema = z.object({
@@ -278,11 +275,10 @@ export const executeCustomWorkflowSchema = z.object({
 
 export const getWorkflowResultSchema = z.object({
   workflowId: z.string(),
+  operationName: z.enum(Object.values(OPERATION_NAME)),
 });
 
 export const restoreWorkflowSchema = z.object({
   workflowId: z.string(),
-  functionName: z
-    .string()
-    .describe("Always use this for type safety if possible"),
+  operationName: z.string().describe('Always use this for type safety if possible'),
 });

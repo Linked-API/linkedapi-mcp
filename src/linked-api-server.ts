@@ -1,14 +1,15 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import { LinkedApi, LinkedApiWorkflowTimeoutError } from "linkedapi-node";
-import { LinkedApiTools } from "./tools/linked-api-tools";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { LinkedApi, LinkedApiError, LinkedApiWorkflowTimeoutError } from 'linkedapi-node';
+
+import { LinkedApiTools } from './tools/linked-api-tools';
 import {
-  LinkedApiServerConfig,
   CallToolResult,
   ExtendedCallToolRequest,
+  LinkedApiServerConfig,
   ProgressNotification,
   ToolHandler,
-} from "./types";
-import { debugLog } from "./utils/debug-log";
+} from './types';
+import { debugLog } from './utils/debug-log';
 
 export class LinkedApiMCPServer {
   private linkedapi: LinkedApi;
@@ -23,12 +24,10 @@ export class LinkedApiMCPServer {
 
     this.toolHandlers = new LinkedApiTools().tools;
 
-    debugLog("LinkedApiMCPServer initialized successfully");
+    debugLog('LinkedApiMCPServer initialized successfully');
   }
 
-  public setProgressCallback(
-    callback: (notification: ProgressNotification) => void,
-  ) {
+  public setProgressCallback(callback: (notification: ProgressNotification) => void) {
     this.progressCallback = callback;
   }
 
@@ -52,9 +51,7 @@ export class LinkedApiMCPServer {
     return Array.from(this.toolHandlers.values()).map((t) => t.tool);
   }
 
-  public async callTool(
-    request: ExtendedCallToolRequest["params"],
-  ): Promise<CallToolResult> {
+  public async callTool(request: ExtendedCallToolRequest['params']): Promise<CallToolResult> {
     const { name, arguments: args, _meta } = request;
     const progressToken = _meta?.progressToken;
 
@@ -74,24 +71,19 @@ export class LinkedApiMCPServer {
     try {
       const progressCallback = progressToken
         ? (progress: ProgressNotification) => {
-            this.sendProgress(
-              progress.progressToken,
-              progress.progress,
-              progress.total,
-              progress.message,
-            );
+            this.sendProgress(progressToken, progress.progress, progress.total, progress.message);
           }
         : undefined;
 
-      const result = await toolHandler.handler(
-        this.linkedapi,
-        args || {},
-        progressCallback,
-      );
+      const result = await toolHandler.handler(this.linkedapi, args || {}, progressCallback);
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      debugLog(`Tool ${name} execution failed`, {
+        error: error,
+        isLinkedApiWorkflowTimeoutError: error instanceof LinkedApiWorkflowTimeoutError,
+        isLinkedApiError: error instanceof LinkedApiError,
+      });
+      const errorMessage = error instanceof Error ? error.message : String(error);
       debugLog(`Tool ${name} execution failed`, {
         error: errorMessage,
         stack: error instanceof Error ? error.stack : undefined,
@@ -101,12 +93,12 @@ export class LinkedApiMCPServer {
         return {
           content: [
             {
-              type: "text" as const,
+              type: 'text' as const,
               text: JSON.stringify(
                 {
                   message: error.message,
                   workflowId: error.workflowId,
-                  functionName: error.functionName,
+                  operationName: error.operationName,
                 },
                 null,
                 2,
@@ -119,7 +111,7 @@ export class LinkedApiMCPServer {
       return {
         content: [
           {
-            type: "text" as const,
+            type: 'text' as const,
             text: `Error executing ${name}: ${errorMessage}`,
           },
         ],

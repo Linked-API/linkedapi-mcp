@@ -1,31 +1,27 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { commentOnPostSchema } from "../../linked-api-schemas.js";
-import LinkedApi, { TCommentOnPostParams } from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi, { TCommentOnPostParams } from 'linkedapi-node';
+
+import { commentOnPostSchema } from '../../linked-api-schemas.js';
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getCommentOnPostTool = (): Tool => ({
-  name: "comment_on_post",
-  description:
-    "Allows you to leave a comment on a post (st.commentOnPost action).",
+  name: 'comment_on_post',
+  description: 'Allows you to leave a comment on a post (st.commentOnPost action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {
       postUrl: {
-        type: "string",
+        type: 'string',
         description:
           "The LinkedIn post URL to comment on (e.g., 'https://www.linkedin.com/posts/username_activity-id')",
       },
       text: {
-        type: "string",
-        description: "Comment text, must be up to 1000 characters.",
+        type: 'string',
+        description: 'Comment text, must be up to 1000 characters.',
       },
     },
-    required: ["postUrl", "text"],
+    required: ['postUrl', 'text'],
   },
 });
 
@@ -34,17 +30,14 @@ const commentOnPost = async (
   args: unknown,
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
-  const params = commentOnPostSchema.parse(args);
-  const progressToken = "comment_on_post";
-  const workflow = await linkedapi.commentOnPost(
-    params as TCommentOnPostParams,
-  );
-  await executeWithProgress(progressToken, progressCallback, workflow);
+  const params = commentOnPostSchema.parse(args) as TCommentOnPostParams;
+  const progressToken = 'comment_on_post';
+  await executeWithProgress(progressToken, progressCallback, linkedapi.commentOnPost, params);
   return {
     content: [
       {
-        type: "text",
-        text: "Comment posted",
+        type: 'text',
+        text: 'Comment posted',
       },
     ],
   };

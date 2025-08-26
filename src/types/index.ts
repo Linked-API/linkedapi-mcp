@@ -1,14 +1,10 @@
-import {
-  Tool,
-  CallToolRequest,
-  CallToolResult,
-} from "@modelcontextprotocol/sdk/types.js";
-import { LinkedApi } from "linkedapi-node";
+import { CallToolRequest, CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { LinkedApi } from 'linkedapi-node';
 
 export type { CallToolResult };
 
 export interface ExtendedCallToolRequest extends CallToolRequest {
-  params: CallToolRequest["params"] & {
+  params: CallToolRequest['params'] & {
     _meta?: {
       progressToken?: string | number;
     };

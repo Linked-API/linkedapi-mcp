@@ -1,26 +1,23 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { nvFetchPersonSchema } from "../../linked-api-schemas.js";
-import LinkedApi, { TNvOpenPersonPageParams } from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi, { TNvOpenPersonPageParams } from 'linkedapi-node';
+
+import { nvFetchPersonSchema } from '../../linked-api-schemas.js';
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getNvFetchPersonTool = (): Tool => ({
-  name: "nv_fetch_person",
+  name: 'nv_fetch_person',
   description:
-    "Allows you to open a person page in Sales Navigator to retrieve their basic information (nv.openPersonPage action).",
+    'Allows you to open a person page in Sales Navigator to retrieve their basic information (nv.openPersonPage action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {
       personHashedUrl: {
-        type: "string",
-        description: "Hashed LinkedIn URL of the person.",
+        type: 'string',
+        description: 'Hashed LinkedIn URL of the person.',
       },
     },
-    required: ["personHashedUrl"],
+    required: ['personHashedUrl'],
   },
 });
 
@@ -29,20 +26,18 @@ const salesNavigatorFetchPerson = async (
   args: unknown,
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
-  const params = nvFetchPersonSchema.parse(args);
-  const progressToken = "nv_fetch_person";
-  const workflow = await linkedapi.salesNavigatorFetchPerson(
-    params as TNvOpenPersonPageParams,
-  );
+  const params = nvFetchPersonSchema.parse(args) as TNvOpenPersonPageParams;
+  const progressToken = 'nv_fetch_person';
   const result = await executeWithProgress(
     progressToken,
     progressCallback,
-    workflow,
+    linkedapi.nvFetchPerson,
+    params,
   );
   return {
     content: [
       {
-        type: "text",
+        type: 'text',
         text: JSON.stringify(result, null, 2),
       },
     ],

@@ -1,19 +1,15 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
-import {
-  CallToolResult,
-  ProgressNotification,
-  ToolHandler,
-} from "../../types/index.js";
-import { retrieveSSISchema } from "../../linked-api-schemas.js";
-import LinkedApi from "linkedapi-node";
-import { executeWithProgress } from "../../utils/execute-with-progress.js";
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import LinkedApi from 'linkedapi-node';
+
+import { CallToolResult, ProgressNotification, ToolHandler } from '../../types/index.js';
+import { executeWithProgress } from '../../utils/execute-with-progress.js';
 
 const getRetrieveSSITool = (): Tool => ({
-  name: "retrieve_ssi",
+  name: 'retrieve_ssi',
   description:
-    "Allows you to retrieve your current SSI (Social Selling Index) (st.retrieveSSI action).",
+    'Allows you to retrieve your current SSI (Social Selling Index) (st.retrieveSSI action).',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {},
   },
 });
@@ -23,18 +19,12 @@ const retrieveSSI = async (
   _args: unknown,
   progressCallback?: (p: ProgressNotification) => void,
 ): Promise<CallToolResult> => {
-  retrieveSSISchema.parse(_args ?? {});
-  const progressToken = "retrieve_ssi";
-  const workflow = await linkedapi.retrieveSSI();
-  const result = await executeWithProgress(
-    progressToken,
-    progressCallback,
-    workflow,
-  );
+  const progressToken = 'retrieve_ssi';
+  const result = await executeWithProgress(progressToken, progressCallback, linkedapi.retrieveSSI);
   return {
     content: [
       {
-        type: "text",
+        type: 'text',
         text: JSON.stringify(result, null, 2),
       },
     ],
