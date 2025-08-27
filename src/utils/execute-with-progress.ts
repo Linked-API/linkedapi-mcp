@@ -1,30 +1,28 @@
-import {
-  LinkedApiWorkflowTimeoutError,
-  TMappedResponse,
-  WorkflowHandler,
-} from "linkedapi-node";
-import { ProgressNotification } from "../types";
+import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from 'linkedapi-node';
 
-export async function executeWithProgress<T>(
-  progressToken: string,
-  progressCallback: ((progress: ProgressNotification) => void) | undefined,
-  workflowHandler: WorkflowHandler<T>,
-): Promise<TMappedResponse<T>> {
-  const workflowTimeout =
-    parseInt(process.env.HEALTH_CHECK_PERIOD || "60", 10) * 1000;
+import { LinkedApiProgressNotification } from './types';
+
+export async function executeWithProgress<TParams, TResult>(
+  progressCallback: (progress: LinkedApiProgressNotification) => void,
+  operation: Operation<TParams, TResult>,
+  {
+    params,
+    workflowId,
+    progressToken,
+  }: { params?: TParams; workflowId?: string; progressToken?: string | number } = {},
+): Promise<TMappedResponse<TResult>> {
+  const workflowTimeout = parseInt(process.env.HEALTH_CHECK_PERIOD || '60', 10) * 1000;
   let progress = 0;
 
-  if (progressCallback) {
-    progressCallback({
-      progressToken,
-      progress,
-      total: 100,
-      message: `Starting workflow ${progressToken}...`,
-    });
-  }
+  progressCallback({
+    progressToken,
+    progress,
+    total: 100,
+    message: `Starting workflow ${operation.operationName}...`,
+  });
 
-  const interval = setInterval(() => {
-    if (progressCallback) {
+  const interval = setInterval(
+    () => {
       if (progress < 50) {
         progress += 5;
       } else if (progress < 98) {
@@ -35,23 +33,27 @@ export async function executeWithProgress<T>(
         progressToken,
         progress,
         total: 100,
-        message: `Executing workflow ${progressToken}...`,
+        message: `Executing workflow ${operation.operationName}...`,
       });
-    }
-  }, 60000);
+    },
+    Math.max(workflowTimeout / 20, 10000),
+  );
 
   try {
-    const result = await workflowHandler.result({ timeout: workflowTimeout });
+    if (!workflowId) {
+      workflowId = await operation.execute(params as TParams);
+    }
+    const result = await operation.result(workflowId, {
+      timeout: workflowTimeout,
+    });
     clearInterval(interval);
 
-    if (progressCallback) {
-      progressCallback({
-        progressToken,
-        progress: 100,
-        total: 100,
-        message: `Workflow ${progressToken} completed successfully`,
-      });
-    }
+    progressCallback({
+      progressToken,
+      progress: 100,
+      total: 100,
+      message: `Workflow ${operation.operationName} completed successfully`,
+    });
 
     return result;
   } catch (error) {
@@ -67,14 +69,24 @@ export async function executeWithProgress<T>(
 function generateTimeoutError(error: LinkedApiWorkflowTimeoutError) {
   const restoreMessage = `Workflow is running in the background. Continue listening for updates.
 
-  The workflow is actively processing and can be monitored using the restore_workflow tool.
-  
-  Continue Listening:
-  - workflowId: ${error.workflowId}
-  - functionName: ${error.functionName}
-  
-  Use these parameters with the restore_workflow tool to continue listening for updates.
-  Background processing keeps the MCP client responsive while the workflow completes.`;
+ACTION REQUIRED (MCP CLIENT):
+- Do not retry the original tool; the workflow is already running
+- Call the get_workflow_result tool with the parameters below and keep listening until completion
+
+PARAMETERS TO USE:
+- workflowId: ${error.workflowId}
+- operationName: ${error.operationName}
+
+GENERIC MCP CALL EXAMPLE:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "${error.workflowId}",
+    "operationName": "${error.operationName}"
+  }
+}
+
+Background processing keeps the MCP client responsive while the workflow completes.`;
 
   error.message = restoreMessage;
   return error;

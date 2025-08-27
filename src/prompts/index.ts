@@ -16,11 +16,11 @@ LINKEDIN WORKFLOWS RUN IN THE BACKGROUND:
 - To keep the MCP client responsive, workflows continue in the background
 - This is INTENTIONAL DESIGN for better user experience
 - You receive periodic updates about workflow progress
-- Simply continue listening for updates using restore_workflow
+- Simply continue listening for updates using get_workflow_result
 
 WHEN A WORKFLOW IS RUNNING IN BACKGROUND:
-1. You'll receive a status message with: workflowId and functionName
-2. Use restore_workflow(workflowId, functionName) to continue listening for updates
+1. You'll receive a status message with: workflowId and operationName
+2. Use get_workflow_result(workflowId, operationName) to continue listening for updates
 3. Keep listening until you get the final results
 4. This is normal workflow operation - the task is actively running
 
@@ -28,7 +28,7 @@ EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {
   "message": "Workflow is running in the background. Continue listening for updates.",
   "workflowId": "account-12345-abcde",
-  "functionName": "searchCompanies"
+  "operationName": "searchCompanies"
 }
 
 RESPONSE: "Great! The search is running in the background. Let me continue listening for updates."
@@ -38,6 +38,25 @@ ALWAYS EXPLAIN TO USERS:
 - You're continuing to listen for updates
 - This ensures responsive interaction while processing
 - This is how Linked API provides optimal user experience
+
+CLIENT ACTION WHEN YOU SEE A BACKGROUND WORKFLOW MESSAGE:
+- Immediately call the get_workflow_result tool with the provided workflowId and operationName
+- Keep calling get_workflow_result until the final result is returned
+- Do NOT retry the original tool; the workflow is already running
+- Treat this as normal, successful behavior (not an error)
+
+REQUIRED PARAMETERS FOR get_workflow_result:
+- workflowId: The exact value from the background message
+- operationName: The exact value from the background message (required for correct type restoration)
+
+GENERIC MCP CALL EXAMPLE:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "account-12345-abcde",
+    "operationName": "searchCompanies"
+  }
+}
 
 Remember: Background workflows = Active processing with responsive updates!`;
 
@@ -71,20 +90,30 @@ WHY WORKFLOWS RUN IN BACKGROUND:
 - Your operation continues processing while you get updates
 
 WHAT TO DO WHEN WORKFLOW RUNS IN BACKGROUND:
-1. Look for workflowId and functionName in the status message
-2. Use restore_workflow(workflowId, functionName) to continue listening
-3. Keep listening until you get final results
-4. The operation is actively running - just continue listening!
+1. Look for workflowId and operationName in the status message
+2. Immediately call get_workflow_result(workflowId, operationName) to continue listening
+3. Repeat get_workflow_result until you get final results
+4. Do NOT re-run the original tool; the workflow is already executing
+5. Treat this as normal, successful operation (not an error)
 
 EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {
   "message": "Workflow is running in the background. Continue listening for updates.",
   "workflowId": "account-12345-abcde", 
-  "functionName": "searchCompanies"
+  "operationName": "searchCompanies"
 }
 
 CORRECT RESPONSE:
-"Perfect! The search is running in the background. Let me continue listening for updates."
+"Perfect! The search is running in the background. Let me continue listening by calling get_workflow_result with the provided parameters."
+
+GENERIC MCP CALL TO CONTINUE LISTENING:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "account-12345-abcde",
+    "operationName": "searchCompanies"
+  }
+}
 
 INCORRECT RESPONSE:
 "Sorry, there was an error. The search failed."
@@ -93,31 +122,35 @@ REMEMBER:
 ✅ Background workflows = Active processing (operation is running)
 ❌ Background workflows ≠ Errors (operation is not broken)
 🔄 Always continue listening for workflow updates
-⏱️ Linked API uses background processing for optimal UX`;
+⏱️ Linked API uses background processing for optimal UX
+
+COMMON MISTAKES TO AVOID:
+- Retrying the original tool instead of calling get_workflow_result
+- Omitting operationName (it is required)
+- Treating the background message as a failure instead of an active process`;
 
 export const availablePrompts = [
   {
-    name: "performance_guidelines",
-    description:
-      "Get performance optimization guidelines for Linked API MCP tools",
+    name: 'performance_guidelines',
+    description: 'Get performance optimization guidelines for Linked API MCP tools',
   },
   {
-    name: "parameter_usage",
-    description: "Learn when to use optional parameters in Linked API requests",
+    name: 'parameter_usage',
+    description: 'Learn when to use optional parameters in Linked API requests',
   },
   {
-    name: "background_workflows",
-    description: "Learn how Linked API background workflows provide optimal UX",
+    name: 'background_workflows',
+    description: 'Learn how Linked API background workflows provide optimal UX',
   },
 ];
 
 export function getPromptContent(name: string): string {
   switch (name) {
-    case "performance_guidelines":
+    case 'performance_guidelines':
       return systemPrompt;
-    case "parameter_usage":
+    case 'parameter_usage':
       return parameterUsageGuidelines;
-    case "background_workflows":
+    case 'background_workflows':
       return backgroundWorkflowPrompt;
     default:
       throw new Error(`Unknown prompt: ${name}`);
