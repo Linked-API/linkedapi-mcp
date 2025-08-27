@@ -69,14 +69,24 @@ export async function executeWithProgress<TParams, TResult>(
 function generateTimeoutError(error: LinkedApiWorkflowTimeoutError) {
   const restoreMessage = `Workflow is running in the background. Continue listening for updates.
 
-  The workflow is actively processing and can be monitored using the get_workflow_result tool.
-  
-  Continue Listening:
-  - workflowId: ${error.workflowId}
-  - operationName: ${error.operationName}
-  
-  Use these parameters with the get_workflow_result tool to continue listening for updates.
-  Background processing keeps the MCP client responsive while the workflow completes.`;
+ACTION REQUIRED (MCP CLIENT):
+- Do not retry the original tool; the workflow is already running
+- Call the get_workflow_result tool with the parameters below and keep listening until completion
+
+PARAMETERS TO USE:
+- workflowId: ${error.workflowId}
+- operationName: ${error.operationName}
+
+GENERIC MCP CALL EXAMPLE:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "${error.workflowId}",
+    "operationName": "${error.operationName}"
+  }
+}
+
+Background processing keeps the MCP client responsive while the workflow completes.`;
 
   error.message = restoreMessage;
   return error;

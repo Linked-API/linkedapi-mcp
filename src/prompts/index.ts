@@ -39,6 +39,25 @@ ALWAYS EXPLAIN TO USERS:
 - This ensures responsive interaction while processing
 - This is how Linked API provides optimal user experience
 
+CLIENT ACTION WHEN YOU SEE A BACKGROUND WORKFLOW MESSAGE:
+- Immediately call the get_workflow_result tool with the provided workflowId and operationName
+- Keep calling get_workflow_result until the final result is returned
+- Do NOT retry the original tool; the workflow is already running
+- Treat this as normal, successful behavior (not an error)
+
+REQUIRED PARAMETERS FOR get_workflow_result:
+- workflowId: The exact value from the background message
+- operationName: The exact value from the background message (required for correct type restoration)
+
+GENERIC MCP CALL EXAMPLE:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "account-12345-abcde",
+    "operationName": "searchCompanies"
+  }
+}
+
 Remember: Background workflows = Active processing with responsive updates!`;
 
 export const parameterUsageGuidelines = `Parameter Usage Guidelines:
@@ -72,9 +91,10 @@ WHY WORKFLOWS RUN IN BACKGROUND:
 
 WHAT TO DO WHEN WORKFLOW RUNS IN BACKGROUND:
 1. Look for workflowId and operationName in the status message
-2. Use get_workflow_result(workflowId, operationName) to continue listening
-3. Keep listening until you get final results
-4. The operation is actively running - just continue listening!
+2. Immediately call get_workflow_result(workflowId, operationName) to continue listening
+3. Repeat get_workflow_result until you get final results
+4. Do NOT re-run the original tool; the workflow is already executing
+5. Treat this as normal, successful operation (not an error)
 
 EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {
@@ -84,7 +104,16 @@ EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 }
 
 CORRECT RESPONSE:
-"Perfect! The search is running in the background. Let me continue listening for updates."
+"Perfect! The search is running in the background. Let me continue listening by calling get_workflow_result with the provided parameters."
+
+GENERIC MCP CALL TO CONTINUE LISTENING:
+{
+  "name": "get_workflow_result",
+  "arguments": {
+    "workflowId": "account-12345-abcde",
+    "operationName": "searchCompanies"
+  }
+}
 
 INCORRECT RESPONSE:
 "Sorry, there was an error. The search failed."
@@ -93,7 +122,12 @@ REMEMBER:
 ✅ Background workflows = Active processing (operation is running)
 ❌ Background workflows ≠ Errors (operation is not broken)
 🔄 Always continue listening for workflow updates
-⏱️ Linked API uses background processing for optimal UX`;
+⏱️ Linked API uses background processing for optimal UX
+
+COMMON MISTAKES TO AVOID:
+- Retrying the original tool instead of calling get_workflow_result
+- Omitting operationName (it is required)
+- Treating the background message as a failure instead of an active process`;
 
 export const availablePrompts = [
   {

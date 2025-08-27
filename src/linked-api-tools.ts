@@ -66,7 +66,6 @@ export class LinkedApiTools {
       new ExecuteCustomWorkflowTool(linkedapi, progressCallback),
       new GetWorkflowResultTool(linkedapi, progressCallback),
       new GetApiUsageTool(linkedapi, progressCallback),
-      new GetConversationTool(linkedapi, progressCallback),
     ];
   }
 
