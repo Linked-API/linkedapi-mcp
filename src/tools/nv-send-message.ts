@@ -2,8 +2,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { TNvSendMessageParams } from 'linkedapi-node';
 import { z } from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { OperationTool } from '../linked-api-tool.js';
+import { OperationTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvSendMessageTool extends OperationTool<TNvSendMessageParams, unknown> {
   public override readonly name = 'nv_send_message';

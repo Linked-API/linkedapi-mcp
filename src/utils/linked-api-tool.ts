@@ -1,9 +1,9 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Operation, TMappedResponse } from 'linkedapi-node';
-import { LinkedApiProgressNotification } from 'src/types';
+import { LinkedApiProgressNotification } from 'src/utils/types';
 import z from 'zod';
 
-import { executeWithProgress } from '../utils/execute-with-progress';
+import { executeWithProgress } from './execute-with-progress';
 
 export abstract class LinkedApiTool<TParams, TResult> {
   public abstract readonly name: string;

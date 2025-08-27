@@ -10,8 +10,8 @@ import {
 
 import { LinkedApiMCPServer } from './linked-api-server';
 import { availablePrompts, getPromptContent, systemPrompt } from './prompts';
-import { LinkedApiProgressNotification } from './types';
 import { debugLog } from './utils/debug-log';
+import { LinkedApiProgressNotification } from './utils/types';
 
 async function main() {
   const linkedApiToken = process.env.LINKED_API_TOKEN;
@@ -32,19 +32,7 @@ async function main() {
     },
   );
 
-  const progressCallback = (notification: LinkedApiProgressNotification) => {
-    void server.notification({
-      method: 'notifications/progress',
-      params: {
-        progressToken: notification.progressToken,
-        progress: notification.progress,
-        total: notification.total,
-        _meta: {
-          message: notification.message,
-        },
-      },
-    });
-  };
+  const progressCallback = (_notification: LinkedApiProgressNotification) => {};
 
   const linkedApiServer = new LinkedApiMCPServer(
     {

@@ -2,9 +2,9 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { OPERATION_NAME, TMappedResponse } from 'linkedapi-node';
 import z from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { executeWithProgress } from '../../utils/execute-with-progress.js';
-import { LinkedApiTool } from '../linked-api-tool.js';
+import { executeWithProgress } from '../utils/execute-with-progress.js';
+import { LinkedApiTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 interface IGetWorkflowResultParams {
   workflowId: string;

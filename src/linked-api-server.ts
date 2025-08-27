@@ -7,9 +7,13 @@ import {
 } from 'linkedapi-node';
 import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
 
-import { LinkedApiTools } from './tools/linked-api-tools';
-import { CallToolResult, ExtendedCallToolRequest, LinkedApiProgressNotification } from './types';
+import { LinkedApiTools } from './linked-api-tools';
 import { debugLog } from './utils/debug-log';
+import {
+  CallToolResult,
+  ExtendedCallToolRequest,
+  LinkedApiProgressNotification,
+} from './utils/types';
 
 export class LinkedApiMCPServer {
   private linkedapi: LinkedApi;
@@ -35,7 +39,7 @@ export class LinkedApiMCPServer {
   }
 
   public getTools(): Tool[] {
-    return [...this.tools.operationTools.map((t) => t.getTool())];
+    return [...this.tools.tools.map((t) => t.getTool())];
   }
 
   public async callTool(request: ExtendedCallToolRequest['params']): Promise<CallToolResult> {

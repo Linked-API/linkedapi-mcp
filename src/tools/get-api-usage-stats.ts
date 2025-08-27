@@ -2,8 +2,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { TApiUsageAction, TApiUsageParams, TMappedResponse } from 'linkedapi-node';
 import z from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { LinkedApiTool } from '../linked-api-tool.js';
+import { LinkedApiTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAction[]> {
   public readonly name = 'get_api_usage';

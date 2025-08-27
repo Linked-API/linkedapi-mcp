@@ -2,8 +2,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { TSearchPeopleParams } from 'linkedapi-node';
 import { z } from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { OperationTool } from '../linked-api-tool.js';
+import { OperationTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown> {
   public override readonly name = 'search_people';

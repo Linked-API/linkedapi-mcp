@@ -2,8 +2,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { TFetchPersonParams } from 'linkedapi-node';
 import { z } from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { OperationTool } from '../linked-api-tool.js';
+import { OperationTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> {
   public override readonly name = 'fetch_person';

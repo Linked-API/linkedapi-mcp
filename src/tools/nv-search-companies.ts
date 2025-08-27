@@ -1,12 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TSearchCompaniesParams } from 'linkedapi-node';
+import LinkedApi, { TNvSearchCompaniesParams } from 'linkedapi-node';
 import { z } from 'zod';
 
-import { LinkedApiProgressNotification } from '../../types/index.js';
-import { OperationTool } from '../linked-api-tool.js';
+import { OperationTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
-export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, unknown> {
-  public override readonly name = 'search_companies';
+export class NvSearchCompaniesTool extends OperationTool<TNvSearchCompaniesParams, unknown> {
+  public override readonly name = 'nv_search_companies';
   protected override readonly schema = z.object({
     term: z.string().optional(),
     limit: z.number().min(1).max(100).optional(),
@@ -28,6 +28,12 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
             ]),
           )
           .optional(),
+        annualRevenue: z
+          .object({
+            min: z.string().optional(),
+            max: z.string().optional(),
+          })
+          .optional(),
       })
       .optional(),
   });
@@ -36,14 +42,14 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
     linkedapi: LinkedApi,
     progressCallback: (progress: LinkedApiProgressNotification) => void,
   ) {
-    super(linkedapi.searchCompanies, progressCallback);
+    super(linkedapi.nvSearchCompanies, progressCallback);
   }
 
   public override getTool(): Tool {
     return {
       name: this.name,
       description:
-        'Allows you to search for companies applying various filtering criteria (st.searchCompanies action).',
+        'Allows you to search for companies in Sales Navigator applying various filtering criteria. (nv.searchCompanies action).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -85,6 +91,21 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
                 type: 'array',
                 description:
                   'Optional. Array of enums representing industries. Matches if company works in any of the listed industries. Takes specific values available in the LinkedIn interface.',
+              },
+              annualRevenue: {
+                type: 'object',
+                description:
+                  'Optional. Object representing company annual revenue range in million USD.',
+                properties: {
+                  min: {
+                    type: 'string',
+                    enum: ['0', '0.5', '1', '2.5', '5', '10', '20', '50', '100', '500', '1000'],
+                  },
+                  max: {
+                    type: 'string',
+                    enum: ['0.5', '1', '2.5', '5', '10', '20', '50', '100', '500', '1000', '1000+'],
+                  },
+                },
               },
             },
           },

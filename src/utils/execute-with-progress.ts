@@ -1,6 +1,6 @@
 import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from 'linkedapi-node';
 
-import { LinkedApiProgressNotification } from '../types';
+import { LinkedApiProgressNotification } from './types';
 
 export async function executeWithProgress<TParams, TResult>(
   progressCallback: (progress: LinkedApiProgressNotification) => void,
