@@ -1,68 +1,78 @@
-import { ToolHandler } from '../types/index.js';
+import LinkedApi from 'linkedapi-node';
 
-import { nvFetchCompanyTool } from './sales-navigator/fetch-company.js';
-import { nvFetchPersonTool } from './sales-navigator/fetch-person.js';
-import { nvSearchCompaniesTool } from './sales-navigator/search-companies.js';
-import { nvSearchPeopleTool } from './sales-navigator/search-people.js';
-import { nvSendMessageTool } from './sales-navigator/send-message.js';
-import { nvSyncConversationTool } from './sales-navigator/sync-conversation.js';
-import { checkConnectionStatusTool } from './standard/check-connection-status.js';
-import { commentOnPostTool } from './standard/comment-on-post.js';
-import { executeCustomWorkflowTool } from './standard/execute-custom-workflow.js';
-import { fetchCompanyTool } from './standard/fetch-company.js';
-import { fetchPersonTool } from './standard/fetch-person.js';
-import { fetchPostTool } from './standard/fetch-post.js';
-import { getApiUsageStatsTool } from './standard/get-api-usage-stats.js';
-import { getWorkflowResultTool } from './standard/get-workflow-result.js';
-import { pollConversationsTool } from './standard/poll-conversations.js';
-import { reactToPostTool } from './standard/react-to-post.js';
-import { removeConnectionTool } from './standard/remove-connection.js';
-import { retrieveConnectionsTool } from './standard/retrieve-connections.js';
-import { retrievePendingRequestsTool } from './standard/retrieve-pending-requests.js';
-import { retrievePerformanceTool } from './standard/retrieve-performance.js';
-import { retrieveSSITool } from './standard/retrieve-ssi.js';
-import { searchCompaniesTool } from './standard/search-companies.js';
-import { searchPeopleTool } from './standard/search-people.js';
-import { sendConnectionRequestTool } from './standard/send-connection-request.js';
-import { sendMessageTool } from './standard/send-message.js';
-import { syncConversationTool } from './standard/sync-conversation.js';
-import { withdrawConnectionRequestTool } from './standard/withdraw-connection-request.js';
+import { LinkedApiProgressNotification } from '../types/index.js';
+
+import { LinkedApiTool } from './linked-api-tool.js';
+import { CheckConnectionStatusTool } from './operation/check-connection-status.js';
+import { CommentOnPostTool } from './operation/comment-on-post.js';
+import { ExecuteCustomWorkflowTool } from './operation/execute-custom-workflow.js';
+import { FetchCompanyTool } from './operation/fetch-company.js';
+import { FetchPersonTool } from './operation/fetch-person.js';
+import { FetchPostTool } from './operation/fetch-post.js';
+import { NvFetchCompanyTool } from './operation/nv-fetch-company.js';
+import { NvFetchPersonTool } from './operation/nv-fetch-person.js';
+import { NvSearchCompaniesTool } from './operation/nv-search-companies.js';
+import { NvSearchPeopleTool } from './operation/nv-search-people.js';
+import { NvSendMessageTool } from './operation/nv-send-message.js';
+import { NvSyncConversationTool } from './operation/nv-sync-conversation.js';
+import { ReactToPostTool } from './operation/react-to-post.js';
+import { RemoveConnectionTool } from './operation/remove-connection.js';
+import { RetrieveConnectionsTool } from './operation/retrieve-connections.js';
+import { RetrievePendingRequestsTool } from './operation/retrieve-pending-requests.js';
+import { RetrievePerformanceTool } from './operation/retrieve-performance.js';
+import { RetrieveSSITool } from './operation/retrieve-ssi.js';
+import { SearchCompaniesTool } from './operation/search-companies.js';
+import { SearchPeopleTool } from './operation/search-people.js';
+import { SendConnectionRequestTool } from './operation/send-connection-request.js';
+import { SendMessageTool } from './operation/send-message.js';
+import { SyncConversationTool } from './operation/sync-conversation.js';
+import { WithdrawConnectionRequestTool } from './operation/withdraw-connection-request.js';
+import { GetApiUsageTool } from './other/get-api-usage-stats.js';
+import { GetWorkflowResultTool } from './other/get-workflow-result.js';
+import { PollConversationsTool } from './other/poll-conversations.js';
 
 export class LinkedApiTools {
-  public readonly tools: Map<string, ToolHandler>;
+  public readonly operationTools: ReadonlyArray<LinkedApiTool<unknown, unknown>>;
 
-  constructor() {
-    this.tools = new Map([
+  constructor(
+    linkedapi: LinkedApi,
+    progressCallback: (progress: LinkedApiProgressNotification) => void,
+  ) {
+    this.operationTools = [
       // Standard tools
-      [sendMessageTool.tool.name, sendMessageTool],
-      [syncConversationTool.tool.name, syncConversationTool],
-      [pollConversationsTool.tool.name, pollConversationsTool],
-      [checkConnectionStatusTool.tool.name, checkConnectionStatusTool],
-      [sendConnectionRequestTool.tool.name, sendConnectionRequestTool],
-      [withdrawConnectionRequestTool.tool.name, withdrawConnectionRequestTool],
-      [retrievePendingRequestsTool.tool.name, retrievePendingRequestsTool],
-      [retrieveConnectionsTool.tool.name, retrieveConnectionsTool],
-      [removeConnectionTool.tool.name, removeConnectionTool],
-      [searchCompaniesTool.tool.name, searchCompaniesTool],
-      [searchPeopleTool.tool.name, searchPeopleTool],
-      [fetchCompanyTool.tool.name, fetchCompanyTool],
-      [fetchPersonTool.tool.name, fetchPersonTool],
-      [fetchPostTool.tool.name, fetchPostTool],
-      [reactToPostTool.tool.name, reactToPostTool],
-      [commentOnPostTool.tool.name, commentOnPostTool],
-      [retrieveSSITool.tool.name, retrieveSSITool],
-      [retrievePerformanceTool.tool.name, retrievePerformanceTool],
+      new SendMessageTool(linkedapi, progressCallback),
+      new SyncConversationTool(linkedapi, progressCallback),
+      new CheckConnectionStatusTool(linkedapi, progressCallback),
+      new RetrieveConnectionsTool(linkedapi, progressCallback),
+      new SendConnectionRequestTool(linkedapi, progressCallback),
+      new WithdrawConnectionRequestTool(linkedapi, progressCallback),
+      new RetrievePendingRequestsTool(linkedapi, progressCallback),
+      new RemoveConnectionTool(linkedapi, progressCallback),
+      new SearchCompaniesTool(linkedapi, progressCallback),
+      new SearchPeopleTool(linkedapi, progressCallback),
+      new FetchCompanyTool(linkedapi, progressCallback),
+      new FetchPersonTool(linkedapi, progressCallback),
+      new FetchPostTool(linkedapi, progressCallback),
+      new ReactToPostTool(linkedapi, progressCallback),
+      new CommentOnPostTool(linkedapi, progressCallback),
+      new RetrieveSSITool(linkedapi, progressCallback),
+      new RetrievePerformanceTool(linkedapi, progressCallback),
       // Sales Navigator tools
-      [nvSendMessageTool.tool.name, nvSendMessageTool],
-      [nvSyncConversationTool.tool.name, nvSyncConversationTool],
-      [nvFetchPersonTool.tool.name, nvFetchPersonTool],
-      [nvFetchCompanyTool.tool.name, nvFetchCompanyTool],
-      [nvSearchCompaniesTool.tool.name, nvSearchCompaniesTool],
-      [nvSearchPeopleTool.tool.name, nvSearchPeopleTool],
+      new NvSendMessageTool(linkedapi, progressCallback),
+      new NvSyncConversationTool(linkedapi, progressCallback),
+      new NvSearchCompaniesTool(linkedapi, progressCallback),
+      new NvSearchPeopleTool(linkedapi, progressCallback),
+      new NvFetchCompanyTool(linkedapi, progressCallback),
+      new NvFetchPersonTool(linkedapi, progressCallback),
       // Other tools
-      [executeCustomWorkflowTool.tool.name, executeCustomWorkflowTool],
-      [getWorkflowResultTool.tool.name, getWorkflowResultTool],
-      [getApiUsageStatsTool.tool.name, getApiUsageStatsTool],
-    ]);
+      new ExecuteCustomWorkflowTool(linkedapi, progressCallback),
+      new GetWorkflowResultTool(linkedapi, progressCallback),
+      new GetApiUsageTool(linkedapi, progressCallback),
+      new PollConversationsTool(linkedapi, progressCallback),
+    ];
+  }
+
+  public toolByName(name: string): LinkedApiTool<unknown, unknown> | undefined {
+    return this.operationTools.find((tool) => tool.name === name);
   }
 }

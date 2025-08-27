@@ -10,16 +10,12 @@ import {
 
 import { LinkedApiMCPServer } from './linked-api-server';
 import { availablePrompts, getPromptContent, systemPrompt } from './prompts';
+import { LinkedApiProgressNotification } from './types';
 import { debugLog } from './utils/debug-log';
 
 async function main() {
   const linkedApiToken = process.env.LINKED_API_TOKEN;
   const identificationToken = process.env.IDENTIFICATION_TOKEN;
-
-  debugLog('Environment variables loaded', {
-    hasLinkedApiToken: !!linkedApiToken,
-    hasIdentificationToken: !!identificationToken,
-  });
 
   const server = new Server(
     {
@@ -36,16 +32,7 @@ async function main() {
     },
   );
 
-  debugLog('Creating LinkedApiMCPServer instance...');
-  const linkedApiServer = new LinkedApiMCPServer({
-    linkedApiToken,
-    identificationToken,
-  });
-
-  linkedApiServer.setProgressCallback((notification) => {
-    debugLog('Progress notification', {
-      message: `${notification.progressToken} ${notification.progress}%`,
-    });
+  const progressCallback = (notification: LinkedApiProgressNotification) => {
     void server.notification({
       method: 'notifications/progress',
       params: {
@@ -57,7 +44,15 @@ async function main() {
         },
       },
     });
-  });
+  };
+
+  const linkedApiServer = new LinkedApiMCPServer(
+    {
+      linkedApiToken: linkedApiToken!,
+      identificationToken: identificationToken!,
+    },
+    progressCallback,
+  );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const tools = linkedApiServer.getTools();
@@ -104,10 +99,6 @@ async function main() {
 
     try {
       const result = await linkedApiServer.callTool(request.params);
-      debugLog('Tool execution completed successfully', {
-        toolName: request.params.name,
-        resultType: typeof result.content,
-      });
       return result;
     } catch (error) {
       debugLog('Tool execution failed', {
@@ -122,6 +113,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  debugLog('Fatal error in main()', error);
+  debugLog('Fatal error', error);
   process.exit(1);
 });

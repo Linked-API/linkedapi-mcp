@@ -1,5 +1,4 @@
-import { CallToolRequest, CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
-import { LinkedApi } from 'linkedapi-node';
+import { CallToolRequest, CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 export type { CallToolResult };
 
@@ -10,24 +9,9 @@ export interface ExtendedCallToolRequest extends CallToolRequest {
     };
   };
 }
-
-export interface ProgressNotification {
-  progressToken: string | number;
+export interface LinkedApiProgressNotification {
+  progressToken?: string | number;
   progress: number;
   total?: number;
   message?: string;
-}
-
-export type ToolHandler = {
-  tool: Tool;
-  handler: (
-    linkedapi: LinkedApi,
-    args: unknown,
-    progressCallback?: (progress: ProgressNotification) => void,
-  ) => Promise<CallToolResult>;
-};
-
-export interface LinkedApiServerConfig {
-  linkedApiToken?: string;
-  identificationToken?: string;
 }

@@ -1,48 +1,40 @@
-import { LinkedApiWorkflowTimeoutError, TMappedResponse } from 'linkedapi-node';
+import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from 'linkedapi-node';
 
-import { ProgressNotification } from '../types';
+import { LinkedApiProgressNotification } from '../types';
 
 export async function executeWithProgress<TParams, TResult>(
-  progressToken: string,
-  progressCallback: ((progress: ProgressNotification) => void) | undefined,
-  operation: {
-    execute: (params: TParams) => Promise<string>;
-    result: (
-      workflowId: string,
-      options?: { timeout?: number; pollInterval?: number },
-    ) => Promise<TMappedResponse<TResult>>;
-  },
-  params?: TParams,
-  workflowId?: string,
+  progressCallback: (progress: LinkedApiProgressNotification) => void,
+  operation: Operation<TParams, TResult>,
+  {
+    params,
+    workflowId,
+    progressToken,
+  }: { params?: TParams; workflowId?: string; progressToken?: string | number } = {},
 ): Promise<TMappedResponse<TResult>> {
   const workflowTimeout = parseInt(process.env.HEALTH_CHECK_PERIOD || '60', 10) * 1000;
   let progress = 0;
 
-  if (progressCallback) {
-    progressCallback({
-      progressToken,
-      progress,
-      total: 100,
-      message: `Starting workflow ${progressToken}...`,
-    });
-  }
+  progressCallback({
+    progressToken,
+    progress,
+    total: 100,
+    message: `Starting workflow ${operation.operationName}...`,
+  });
 
   const interval = setInterval(
     () => {
-      if (progressCallback) {
-        if (progress < 50) {
-          progress += 5;
-        } else if (progress < 98) {
-          progress += 1;
-        }
-
-        progressCallback({
-          progressToken,
-          progress,
-          total: 100,
-          message: `Executing workflow ${progressToken}...`,
-        });
+      if (progress < 50) {
+        progress += 5;
+      } else if (progress < 98) {
+        progress += 1;
       }
+
+      progressCallback({
+        progressToken,
+        progress,
+        total: 100,
+        message: `Executing workflow ${operation.operationName}...`,
+      });
     },
     Math.max(workflowTimeout / 20, 10000),
   );
@@ -56,14 +48,12 @@ export async function executeWithProgress<TParams, TResult>(
     });
     clearInterval(interval);
 
-    if (progressCallback) {
-      progressCallback({
-        progressToken,
-        progress: 100,
-        total: 100,
-        message: `Workflow ${progressToken} completed successfully`,
-      });
-    }
+    progressCallback({
+      progressToken,
+      progress: 100,
+      total: 100,
+      message: `Workflow ${operation.operationName} completed successfully`,
+    });
 
     return result;
   } catch (error) {
