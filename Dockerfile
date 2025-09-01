@@ -18,8 +18,7 @@ RUN npm ci --omit=dev --ignore-scripts
 COPY --from=builder /app/dist ./dist
 
 ENV HOST=0.0.0.0 \
-    PORT=3000 \
-    MCP_HTTP_PATH=/mcp
+    PORT=3000
 
 EXPOSE 3000
 

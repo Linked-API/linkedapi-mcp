@@ -115,7 +115,6 @@ async function main() {
   if (hasFlag('--http') || hasFlag('--transport=http')) {
     const port = Number(process.env.PORT ?? getArgValue('--port') ?? 3000);
     const host = process.env.HOST ?? getArgValue('--host') ?? '0.0.0.0';
-    const basePath = process.env.MCP_HTTP_PATH ?? getArgValue('--path') ?? '/mcp';
     const transport = new JsonHTTPServerTransport();
 
     await server.connect(transport);
@@ -128,10 +127,14 @@ async function main() {
           return;
         }
         const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
-        if (url.pathname !== basePath) {
-          res.statusCode = 404;
-          res.end('Not Found');
-          return;
+        // Set query parameters to headers if they are not set
+        const linkedApiTokenQP = url.searchParams.get('linked-api-token');
+        const identificationTokenQP = url.searchParams.get('identification-token');
+        if (!req.headers['linked-api-token'] && linkedApiTokenQP) {
+          req.headers['linked-api-token'] = linkedApiTokenQP;
+        }
+        if (!req.headers['identification-token'] && identificationTokenQP) {
+          req.headers['identification-token'] = identificationTokenQP;
         }
         await transport.handleRequest(req, res);
       } catch (error) {
@@ -147,7 +150,6 @@ async function main() {
       debugLog('HTTP transport listening', {
         host,
         port,
-        path: basePath,
       });
     });
   } else {
