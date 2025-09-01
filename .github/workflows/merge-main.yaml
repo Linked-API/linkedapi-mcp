@@ -59,3 +59,20 @@ jobs:
             ghcr.io/${{ steps.lowercase.outputs.repository_owner_lowercase }}/${{ secrets.DOCKER_IMAGE_NAME }}:prod
           cache-from: type=registry,ref=ghcr.io/${{ steps.lowercase.outputs.repository_owner_lowercase }}/${{ secrets.DOCKER_IMAGE_NAME }}:prod
           cache-to: type=inline
+
+  deployment:
+    needs: [build-push]
+    runs-on: ubuntu-latest
+    if: always() && needs.build-push.result == 'success'
+
+    steps:
+      - name: Trigger PaaS deployment
+        run: |
+          curl -X 'POST' \
+            '${{ secrets.PAAS_API_URL }}/application.deploy' \
+            -H 'accept: application/json' \
+            -H 'Content-Type: application/json' \
+            -H 'x-api-key: ${{ secrets.PAAS_API_TOKEN }}' \
+            -d '{
+            "applicationId": "${{ secrets.PAAS_APPLICATION_ID }}"
+          }'
