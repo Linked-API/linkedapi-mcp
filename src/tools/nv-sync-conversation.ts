@@ -1,22 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TNvSyncConversationParams } from 'linkedapi-node';
+import { OPERATION_NAME, TNvSyncConversationParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvSyncConversationTool extends OperationTool<TNvSyncConversationParams, unknown> {
   public override readonly name = 'nv_sync_conversation';
+  public override readonly operationName = OPERATION_NAME.nvSyncConversation;
   protected override readonly schema = z.object({
     personUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.nvSyncConversation, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

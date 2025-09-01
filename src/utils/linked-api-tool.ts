@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { Operation, TMappedResponse } from 'linkedapi-node';
+import LinkedApi, { Operation, TMappedResponse, TOperationName } from 'linkedapi-node';
 import { LinkedApiProgressNotification } from 'src/utils/types';
 import z from 'zod';
 
@@ -21,27 +21,24 @@ export abstract class LinkedApiTool<TParams, TResult> {
   }
 
   public abstract execute(
+    linkedapi: LinkedApi,
     args: TParams,
     progressToken?: string | number,
   ): Promise<TMappedResponse<TResult>>;
 }
 
 export abstract class OperationTool<TParams, TResult> extends LinkedApiTool<TParams, TResult> {
-  private readonly operation: Operation<TParams, TResult>;
-
-  constructor(
-    operation: Operation<TParams, TResult>,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(progressCallback);
-    this.operation = operation;
-  }
+  public abstract readonly operationName: TOperationName;
 
   public override execute(
+    linkedapi: LinkedApi,
     args: TParams,
     progressToken?: string | number,
   ): Promise<TMappedResponse<TResult>> {
-    return executeWithProgress(this.progressCallback, this.operation, {
+    const operation = linkedapi.operations.find(
+      (operation) => operation.operationName === this.operationName,
+    )! as Operation<TParams, TResult>;
+    return executeWithProgress(this.progressCallback, operation, {
       params: args,
       progressToken,
     });

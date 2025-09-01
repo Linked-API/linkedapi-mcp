@@ -1,22 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TRemoveConnectionParams } from 'linkedapi-node';
+import { OPERATION_NAME, TRemoveConnectionParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class RemoveConnectionTool extends OperationTool<TRemoveConnectionParams, unknown> {
   public override readonly name = 'remove_connection';
+  public override readonly operationName = OPERATION_NAME.removeConnection;
   protected override readonly schema = z.object({
     personUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.removeConnection, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

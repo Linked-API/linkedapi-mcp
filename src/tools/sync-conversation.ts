@@ -1,22 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TSyncConversationParams } from 'linkedapi-node';
+import { OPERATION_NAME, TSyncConversationParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class SyncConversationTool extends OperationTool<TSyncConversationParams, unknown> {
   public override readonly name = 'sync_conversation';
+  public override readonly operationName = OPERATION_NAME.syncConversation;
   protected override readonly schema = z.object({
     personUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.syncConversation, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

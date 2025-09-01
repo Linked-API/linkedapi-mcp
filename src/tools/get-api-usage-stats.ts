@@ -3,7 +3,6 @@ import LinkedApi, { TApiUsageAction, TApiUsageParams, TMappedResponse } from 'li
 import z from 'zod';
 
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAction[]> {
   public readonly name = 'get_api_usage';
@@ -12,19 +11,11 @@ export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAct
     end: z.string(),
   });
 
-  private readonly linkedapi: LinkedApi;
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(progressCallback);
-    this.linkedapi = linkedapi;
-  }
-
   public override async execute(
+    linkedapi: LinkedApi,
     args: TApiUsageParams,
   ): Promise<TMappedResponse<TApiUsageAction[]>> {
-    return await this.linkedapi.getApiUsage(args);
+    return await linkedapi.getApiUsage(args);
   }
 
   public override getTool(): Tool {

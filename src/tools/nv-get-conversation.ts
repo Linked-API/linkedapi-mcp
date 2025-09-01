@@ -3,7 +3,6 @@ import LinkedApi, { TConversationPollResult, TMappedResponse } from 'linkedapi-n
 import z from 'zod';
 
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvGetConversationTool extends LinkedApiTool<
   { personUrl: string; since?: string },
@@ -15,37 +14,31 @@ export class NvGetConversationTool extends LinkedApiTool<
     since: z.string().optional(),
   });
 
-  private readonly linkedapi: LinkedApi;
-
-  constructor(
+  public override async execute(
     linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(progressCallback);
-    this.linkedapi = linkedapi;
-  }
-
-  public override async execute({
-    personUrl,
-    since,
-  }: {
-    personUrl: string;
-    since?: string;
-  }): Promise<TMappedResponse<TConversationPollResult>> {
-    const conversations = await this.getConversation(personUrl, since);
+    {
+      personUrl,
+      since,
+    }: {
+      personUrl: string;
+      since?: string;
+    },
+  ): Promise<TMappedResponse<TConversationPollResult>> {
+    const conversations = await this.getConversation(linkedapi, personUrl, since);
     if (conversations.errors.length === 0) {
       return conversations;
     }
-    const workflowId = await this.linkedapi.nvSyncConversation.execute({ personUrl });
-    await this.linkedapi.nvSyncConversation.result(workflowId);
-    return await this.getConversation(personUrl, since);
+    const workflowId = await linkedapi.nvSyncConversation.execute({ personUrl });
+    await linkedapi.nvSyncConversation.result(workflowId);
+    return await this.getConversation(linkedapi, personUrl, since);
   }
 
   private async getConversation(
+    linkedapi: LinkedApi,
     personUrl: string,
     since?: string,
   ): Promise<TMappedResponse<TConversationPollResult>> {
-    const conversations = await this.linkedapi.pollConversations([
+    const conversations = await linkedapi.pollConversations([
       {
         personUrl: personUrl,
         type: 'nv',

@@ -11,7 +11,7 @@ export async function executeWithProgress<TParams, TResult>(
     progressToken,
   }: { params?: TParams; workflowId?: string; progressToken?: string | number } = {},
 ): Promise<TMappedResponse<TResult>> {
-  const workflowTimeout = parseInt(process.env.HEALTH_CHECK_PERIOD || '60', 10) * 1000;
+  const workflowTimeout = parseInt(process.env.HEALTH_CHECK_PERIOD || '180', 10) * 1000;
   let progress = 0;
 
   progressCallback({

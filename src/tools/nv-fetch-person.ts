@@ -1,22 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TNvOpenPersonPageParams } from 'linkedapi-node';
+import { OPERATION_NAME, TNvOpenPersonPageParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvFetchPersonTool extends OperationTool<TNvOpenPersonPageParams, unknown> {
   public override readonly name = 'nv_fetch_person';
+  public override readonly operationName = OPERATION_NAME.nvFetchPerson;
   protected override readonly schema = z.object({
     personHashedUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.nvFetchPerson, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

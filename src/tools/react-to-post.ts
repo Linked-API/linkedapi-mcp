@@ -1,23 +1,16 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TReactToPostParams } from 'linkedapi-node';
+import { OPERATION_NAME, TReactToPostParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> {
   public override readonly name = 'react_to_post';
+  public override readonly operationName = OPERATION_NAME.reactToPost;
   protected override readonly schema = z.object({
     postUrl: z.string(),
     type: z.enum(['like', 'love', 'celebrate', 'support', 'funny', 'insightful']).or(z.string()),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.reactToPost, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

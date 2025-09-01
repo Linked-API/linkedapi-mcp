@@ -1,15 +1,19 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TRetrieveConnectionsParams, TRetrieveConnectionsResult } from 'linkedapi-node';
+import {
+  OPERATION_NAME,
+  TRetrieveConnectionsParams,
+  TRetrieveConnectionsResult,
+} from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class RetrieveConnectionsTool extends OperationTool<
   TRetrieveConnectionsParams,
   TRetrieveConnectionsResult[]
 > {
   public override readonly name = 'retrieve_connections';
+  public override readonly operationName = OPERATION_NAME.retrieveConnections;
   protected override readonly schema = z.object({
     limit: z.number().min(1).max(100).optional(),
     filter: z
@@ -25,13 +29,6 @@ export class RetrieveConnectionsTool extends OperationTool<
       })
       .optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.retrieveConnections, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

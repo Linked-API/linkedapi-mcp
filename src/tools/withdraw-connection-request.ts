@@ -1,26 +1,19 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TWithdrawConnectionRequestParams } from 'linkedapi-node';
+import { OPERATION_NAME, TWithdrawConnectionRequestParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class WithdrawConnectionRequestTool extends OperationTool<
   TWithdrawConnectionRequestParams,
   unknown
 > {
   public override readonly name = 'withdraw_connection_request';
+  public override readonly operationName = OPERATION_NAME.withdrawConnectionRequest;
   protected override readonly schema = z.object({
     personUrl: z.string(),
     unfollow: z.boolean().optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.withdrawConnectionRequest, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

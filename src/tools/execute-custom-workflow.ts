@@ -1,25 +1,18 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TWorkflowCompletion, TWorkflowDefinition } from 'linkedapi-node';
+import { OPERATION_NAME, TWorkflowCompletion, TWorkflowDefinition } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class ExecuteCustomWorkflowTool extends OperationTool<
   TWorkflowDefinition,
   TWorkflowCompletion
 > {
   public override readonly name = 'execute_custom_workflow';
+  public override readonly operationName = OPERATION_NAME.customWorkflow;
   protected override readonly schema = z.object({
     definition: z.any(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.customWorkflow, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

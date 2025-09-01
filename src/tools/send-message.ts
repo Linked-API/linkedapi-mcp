@@ -1,23 +1,16 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TSendMessageParams } from 'linkedapi-node';
+import { OPERATION_NAME, TSendMessageParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class SendMessageTool extends OperationTool<TSendMessageParams, unknown> {
   public override readonly name = 'send_message';
+  public override readonly operationName = OPERATION_NAME.sendMessage;
   protected override readonly schema = z.object({
     personUrl: z.string(),
     text: z.string().min(1),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.sendMessage, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {
