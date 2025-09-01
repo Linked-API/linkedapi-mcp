@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   GetPromptRequestSchema,
@@ -20,6 +21,10 @@ function getArgValue(flag: string): string | undefined {
   const value = process.argv[index + 1];
   if (!value || value.startsWith('--')) return undefined;
   return value;
+}
+
+function hasFlag(flag: string): boolean {
+  return process.argv.includes(flag);
 }
 
 async function main() {
@@ -107,44 +112,49 @@ async function main() {
     }
   });
 
-  // Only HTTP transport supported
-  const port = Number(process.env.PORT ?? getArgValue('--port') ?? 3000);
-  const host = process.env.HOST ?? getArgValue('--host') ?? '0.0.0.0';
-  const basePath = process.env.MCP_HTTP_PATH ?? getArgValue('--path') ?? '/mcp';
-  const transport = new JsonHTTPServerTransport();
+  if (hasFlag('--http') || hasFlag('--transport=http')) {
+    const port = Number(process.env.PORT ?? getArgValue('--port') ?? 3000);
+    const host = process.env.HOST ?? getArgValue('--host') ?? '0.0.0.0';
+    const basePath = process.env.MCP_HTTP_PATH ?? getArgValue('--path') ?? '/mcp';
+    const transport = new JsonHTTPServerTransport();
 
-  await server.connect(transport);
+    await server.connect(transport);
 
-  const httpServer = http.createServer(async (req, res) => {
-    try {
-      if (!req.url) {
-        res.statusCode = 400;
-        res.end('Bad Request');
-        return;
+    const httpServer = http.createServer(async (req, res) => {
+      try {
+        if (!req.url) {
+          res.statusCode = 400;
+          res.end('Bad Request');
+          return;
+        }
+        const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
+        if (url.pathname !== basePath) {
+          res.statusCode = 404;
+          res.end('Not Found');
+          return;
+        }
+        await transport.handleRequest(req, res);
+      } catch (error) {
+        debugLog('HTTP request handling failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        res.statusCode = 500;
+        res.end('Internal Server Error');
       }
-      const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
-      if (url.pathname !== basePath) {
-        res.statusCode = 404;
-        res.end('Not Found');
-        return;
-      }
-      await transport.handleRequest(req, res);
-    } catch (error) {
-      debugLog('HTTP request handling failed', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      res.statusCode = 500;
-      res.end('Internal Server Error');
-    }
-  });
-
-  httpServer.listen(port, host, () => {
-    debugLog('HTTP transport listening', {
-      host,
-      port,
-      path: basePath,
     });
-  });
+
+    httpServer.listen(port, host, () => {
+      debugLog('HTTP transport listening', {
+        host,
+        port,
+        path: basePath,
+      });
+    });
+  } else {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    debugLog('stdio transport connected');
+  }
 }
 
 main().catch((error) => {
