@@ -1,12 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TNvFetchCompanyParams } from 'linkedapi-node';
+import { OPERATION_NAME, TNvFetchCompanyParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unknown> {
   public override readonly name = 'nv_fetch_company';
+  public override readonly operationName = OPERATION_NAME.nvFetchCompany;
   protected override readonly schema = z.object({
     companyHashedUrl: z.string(),
     retrieveEmployees: z.boolean().optional().default(false),
@@ -33,13 +33,6 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
       })
       .optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.nvFetchCompany, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

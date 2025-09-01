@@ -1,12 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TNvSearchCompaniesParams } from 'linkedapi-node';
+import { OPERATION_NAME, TNvSearchCompaniesParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvSearchCompaniesTool extends OperationTool<TNvSearchCompaniesParams, unknown> {
   public override readonly name = 'nv_search_companies';
+  public override readonly operationName = OPERATION_NAME.nvSearchCompanies;
   protected override readonly schema = z.object({
     term: z.string().optional(),
     limit: z.number().min(1).max(100).optional(),
@@ -37,13 +37,6 @@ export class NvSearchCompaniesTool extends OperationTool<TNvSearchCompaniesParam
       })
       .optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.nvSearchCompanies, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

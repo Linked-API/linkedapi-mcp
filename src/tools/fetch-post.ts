@@ -1,22 +1,15 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TFetchPostParams } from 'linkedapi-node';
+import { OPERATION_NAME, TFetchPostParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
   public override readonly name = 'fetch_post';
+  public override readonly operationName = OPERATION_NAME.fetchPost;
   protected override readonly schema = z.object({
     postUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.fetchPost, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

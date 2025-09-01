@@ -1,14 +1,10 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import {
-  LinkedApi,
-  LinkedApiError,
-  LinkedApiWorkflowTimeoutError,
-  TLinkedApiConfig,
-} from 'linkedapi-node';
+import { LinkedApi, LinkedApiError, TLinkedApiConfig } from 'linkedapi-node';
 import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
 
 import { LinkedApiTools } from './linked-api-tools';
 import { debugLog } from './utils/debug-log';
+import { handleLinkedApiError } from './utils/handle-linked-api-error';
 import {
   CallToolResult,
   ExtendedCallToolRequest,
@@ -16,15 +12,21 @@ import {
 } from './utils/types';
 
 export class LinkedApiMCPServer {
-  private linkedapi: LinkedApi;
   private tools: LinkedApiTools;
-  private progressCallback: (notification: LinkedApiProgressNotification) => void;
 
-  constructor(
+  constructor(progressCallback: (notification: LinkedApiProgressNotification) => void) {
+    this.tools = new LinkedApiTools(progressCallback);
+  }
+
+  public getTools(): Tool[] {
+    return this.tools.tools.map((tool) => tool.getTool());
+  }
+
+  public async executeWithTokens(
+    request: ExtendedCallToolRequest['params'],
     config: TLinkedApiConfig,
-    progressCallback: (notification: LinkedApiProgressNotification) => void,
-  ) {
-    this.linkedapi = new LinkedApi(
+  ): Promise<CallToolResult> {
+    const linkedApi = new LinkedApi(
       buildLinkedApiHttpClient(
         {
           linkedApiToken: config.linkedApiToken!,
@@ -33,26 +35,14 @@ export class LinkedApiMCPServer {
         'mcp',
       ),
     );
-    this.progressCallback = progressCallback;
 
-    this.tools = new LinkedApiTools(this.linkedapi, this.progressCallback);
-  }
-
-  public getTools(): Tool[] {
-    return [...this.tools.tools.map((t) => t.getTool())];
-  }
-
-  public async callTool(request: ExtendedCallToolRequest['params']): Promise<CallToolResult> {
     const { name, arguments: args, _meta } = request;
     const progressToken = _meta?.progressToken;
 
     try {
-      const tool = this.tools.toolByName(name);
-      if (!tool) {
-        throw new Error(`Unknown tool: ${name}`);
-      }
+      const tool = this.tools.toolByName(name)!;
       const params = tool.validate(args);
-      const { data, errors } = await tool.execute(params, progressToken);
+      const { data, errors } = await tool.execute(linkedApi, params, progressToken);
       if (errors.length > 0 && !data) {
         return {
           content: [
@@ -73,15 +63,7 @@ export class LinkedApiMCPServer {
       };
     } catch (error) {
       if (error instanceof LinkedApiError) {
-        let body: unknown = error;
-        if (error instanceof LinkedApiWorkflowTimeoutError) {
-          const { message, workflowId, operationName } = error;
-          body = {
-            message,
-            workflowId,
-            operationName,
-          };
-        }
+        const body = handleLinkedApiError(error);
         return {
           content: [
             {

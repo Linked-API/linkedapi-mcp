@@ -1,28 +1,22 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, {
+import {
+  OPERATION_NAME,
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult,
 } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class CheckConnectionStatusTool extends OperationTool<
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult
 > {
   public override readonly name = 'check_connection_status';
+  public override readonly operationName = OPERATION_NAME.checkConnectionStatus;
   protected override readonly schema = z.object({
     personUrl: z.string(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.checkConnectionStatus, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

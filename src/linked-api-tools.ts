@@ -1,5 +1,3 @@
-import LinkedApi from 'linkedapi-node';
-
 import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
@@ -32,40 +30,37 @@ import { LinkedApiProgressNotification } from './utils/types.js';
 export class LinkedApiTools {
   public readonly tools: ReadonlyArray<LinkedApiTool<unknown, unknown>>;
 
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
+  constructor(progressCallback: (progress: LinkedApiProgressNotification) => void) {
     this.tools = [
       // Standard tools
-      new SendMessageTool(linkedapi, progressCallback),
-      new GetConversationTool(linkedapi, progressCallback),
-      new CheckConnectionStatusTool(linkedapi, progressCallback),
-      new RetrieveConnectionsTool(linkedapi, progressCallback),
-      new SendConnectionRequestTool(linkedapi, progressCallback),
-      new WithdrawConnectionRequestTool(linkedapi, progressCallback),
-      new RetrievePendingRequestsTool(linkedapi, progressCallback),
-      new RemoveConnectionTool(linkedapi, progressCallback),
-      new SearchCompaniesTool(linkedapi, progressCallback),
-      new SearchPeopleTool(linkedapi, progressCallback),
-      new FetchCompanyTool(linkedapi, progressCallback),
-      new FetchPersonTool(linkedapi, progressCallback),
-      new FetchPostTool(linkedapi, progressCallback),
-      new ReactToPostTool(linkedapi, progressCallback),
-      new CommentOnPostTool(linkedapi, progressCallback),
-      new RetrieveSSITool(linkedapi, progressCallback),
-      new RetrievePerformanceTool(linkedapi, progressCallback),
+      new SendMessageTool(progressCallback),
+      new GetConversationTool(progressCallback),
+      new CheckConnectionStatusTool(progressCallback),
+      new RetrieveConnectionsTool(progressCallback),
+      new SendConnectionRequestTool(progressCallback),
+      new WithdrawConnectionRequestTool(progressCallback),
+      new RetrievePendingRequestsTool(progressCallback),
+      new RemoveConnectionTool(progressCallback),
+      new SearchCompaniesTool(progressCallback),
+      new SearchPeopleTool(progressCallback),
+      new FetchCompanyTool(progressCallback),
+      new FetchPersonTool(progressCallback),
+      new FetchPostTool(progressCallback),
+      new ReactToPostTool(progressCallback),
+      new CommentOnPostTool(progressCallback),
+      new RetrieveSSITool(progressCallback),
+      new RetrievePerformanceTool(progressCallback),
       // Sales Navigator tools
-      new NvSendMessageTool(linkedapi, progressCallback),
-      new NvGetConversationTool(linkedapi, progressCallback),
-      new NvSearchCompaniesTool(linkedapi, progressCallback),
-      new NvSearchPeopleTool(linkedapi, progressCallback),
-      new NvFetchCompanyTool(linkedapi, progressCallback),
-      new NvFetchPersonTool(linkedapi, progressCallback),
+      new NvSendMessageTool(progressCallback),
+      new NvGetConversationTool(progressCallback),
+      new NvSearchCompaniesTool(progressCallback),
+      new NvSearchPeopleTool(progressCallback),
+      new NvFetchCompanyTool(progressCallback),
+      new NvFetchPersonTool(progressCallback),
       // Other tools
-      new ExecuteCustomWorkflowTool(linkedapi, progressCallback),
-      new GetWorkflowResultTool(linkedapi, progressCallback),
-      new GetApiUsageTool(linkedapi, progressCallback),
+      new ExecuteCustomWorkflowTool(progressCallback),
+      new GetWorkflowResultTool(progressCallback),
+      new GetApiUsageTool(progressCallback),
     ];
   }
 

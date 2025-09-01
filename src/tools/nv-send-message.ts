@@ -1,24 +1,17 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TNvSendMessageParams } from 'linkedapi-node';
+import { OPERATION_NAME, TNvSendMessageParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvSendMessageTool extends OperationTool<TNvSendMessageParams, unknown> {
   public override readonly name = 'nv_send_message';
+  public override readonly operationName = OPERATION_NAME.nvSendMessage;
   protected override readonly schema = z.object({
     personUrl: z.string(),
     text: z.string().min(1),
     subject: z.string().optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.nvSendMessage, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

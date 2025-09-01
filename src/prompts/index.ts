@@ -9,6 +9,20 @@ DEFAULT BEHAVIOR: Always use basic requests first. For example:
 
 DON'T enable multiple optional flags unless the user specifically requests all that data.
 
+AUTHENTICATION ERROR HANDLING
+
+WHEN YOU GET AN AUTHENTICATION ERROR:
+The MCP client must provide valid authentication tokens to use Linked API services.
+
+REQUIRED TOKENS (have to be provided in headers in each request):
+- linked-api-token: Your Linked API access token from linkedapi.io
+- identification-token: Your identification token from linkedapi.io
+
+TOKEN SETUP:
+1. Visit https://linkedapi.io to get tokens
+2. Set headers with every request
+3. Keep tokens secure and never share them in logs or error messages
+
 BACKGROUND WORKFLOW HANDLING
 
 LINKEDIN WORKFLOWS RUN IN THE BACKGROUND:
@@ -129,6 +143,18 @@ COMMON MISTAKES TO AVOID:
 - Omitting operationName (it is required)
 - Treating the background message as a failure instead of an active process`;
 
+export const authenticationPrompt = `AUTHENTICATION REQUIREMENTS:
+- MCP clients must provide valid authentication tokens to use Linked API services
+- linked-api-token: Main Linked API access token from linkedapi.io
+- identification-token: Account identification token from linkedapi.io
+
+TOKEN SETUP:
+1. Visit https://linkedapi.io to get tokens
+2. Set headers with every request in MCP client configuration
+3. Keep tokens secure and never share them in logs or error messages
+
+More information: https://linkedapi.io/mcp/installation/`;
+
 export const availablePrompts = [
   {
     name: 'performance_guidelines',
@@ -142,6 +168,10 @@ export const availablePrompts = [
     name: 'background_workflows',
     description: 'Learn how Linked API background workflows provide optimal UX',
   },
+  {
+    name: 'authentication_requirements',
+    description: 'Learn how to authenticate with Linked API MCP',
+  },
 ];
 
 export function getPromptContent(name: string): string {
@@ -152,6 +182,8 @@ export function getPromptContent(name: string): string {
       return parameterUsageGuidelines;
     case 'background_workflows':
       return backgroundWorkflowPrompt;
+    case 'authentication_requirements':
+      return authenticationPrompt;
     default:
       throw new Error(`Unknown prompt: ${name}`);
   }

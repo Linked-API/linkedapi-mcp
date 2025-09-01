@@ -1,20 +1,13 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi from 'linkedapi-node';
+import { OPERATION_NAME } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class RetrieveSSITool extends OperationTool<unknown, unknown> {
+  public override readonly operationName = OPERATION_NAME.retrieveSSI;
   public override readonly name = 'retrieve_ssi';
   protected override readonly schema = z.object({});
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.retrieveSSI, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

@@ -1,27 +1,20 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TSendConnectionRequestParams } from 'linkedapi-node';
+import { OPERATION_NAME, TSendConnectionRequestParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class SendConnectionRequestTool extends OperationTool<
   TSendConnectionRequestParams,
   unknown
 > {
   public override readonly name = 'send_connection_request';
+  public override readonly operationName = OPERATION_NAME.sendConnectionRequest;
   protected override readonly schema = z.object({
     personUrl: z.string(),
     note: z.string().optional(),
     email: z.string().optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.sendConnectionRequest, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

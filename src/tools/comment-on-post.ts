@@ -1,23 +1,16 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TCommentOnPostParams } from 'linkedapi-node';
+import { OPERATION_NAME, TCommentOnPostParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unknown> {
   public override readonly name = 'comment_on_post';
+  public override readonly operationName = OPERATION_NAME.commentOnPost;
   protected override readonly schema = z.object({
     postUrl: z.string(),
     text: z.string().min(1),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.commentOnPost, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {

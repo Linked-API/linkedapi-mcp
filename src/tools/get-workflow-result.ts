@@ -4,7 +4,6 @@ import z from 'zod';
 
 import { executeWithProgress } from '../utils/execute-with-progress.js';
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 interface IGetWorkflowResultParams {
   workflowId: string;
@@ -18,26 +17,14 @@ export class GetWorkflowResultTool extends LinkedApiTool<IGetWorkflowResultParam
     operationName: z.enum(Object.values(OPERATION_NAME)),
   });
 
-  private readonly linkedapi: LinkedApi;
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(progressCallback);
-    this.linkedapi = linkedapi;
-  }
-
   public override async execute(
+    linkedapi: LinkedApi,
     args: IGetWorkflowResultParams,
     progressToken?: string | number,
   ): Promise<TMappedResponse<unknown>> {
-    const operation = this.linkedapi.operations.find(
+    const operation = linkedapi.operations.find(
       (operation) => operation.operationName === args.operationName,
-    );
-    if (!operation) {
-      throw new Error(`Operation ${args.operationName} not found`);
-    }
+    )!;
     return await executeWithProgress(this.progressCallback, operation, {
       workflowId: args.workflowId,
       progressToken,

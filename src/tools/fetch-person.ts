@@ -1,12 +1,12 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TFetchPersonParams } from 'linkedapi-node';
+import { OPERATION_NAME, TFetchPersonParams } from 'linkedapi-node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> {
   public override readonly name = 'fetch_person';
+  public override readonly operationName = OPERATION_NAME.fetchPerson;
   protected override readonly schema = z.object({
     personUrl: z.string(),
     retrieveExperience: z.boolean().optional().default(false),
@@ -35,13 +35,6 @@ export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> 
       })
       .optional(),
   });
-
-  constructor(
-    linkedapi: LinkedApi,
-    progressCallback: (progress: LinkedApiProgressNotification) => void,
-  ) {
-    super(linkedapi.fetchPerson, progressCallback);
-  }
 
   public override getTool(): Tool {
     return {
