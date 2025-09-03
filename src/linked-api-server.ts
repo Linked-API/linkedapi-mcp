@@ -53,11 +53,21 @@ export class LinkedApiMCPServer {
           ],
         };
       }
+      if (data) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(data, null, 2),
+            },
+          ],
+        };
+      }
       return {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify(data, null, 2),
+            text: 'Completed',
           },
         ],
       };
