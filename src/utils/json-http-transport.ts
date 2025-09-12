@@ -29,7 +29,14 @@ export class JsonHTTPServerTransport implements Transport {
   public onerror?: (error: Error) => void;
   public onmessage?: (
     message: JSONRPCMessage,
-    extra?: { requestInfo?: { headers: IncomingMessage['headers'] }; authInfo?: unknown },
+    extra?: {
+      requestInfo?: {
+        headers: IncomingMessage['headers'];
+        method?: string;
+        transport?: 'http' | 'sse';
+      };
+      authInfo?: unknown;
+    },
   ) => void;
 
   private started = false;
@@ -70,43 +77,45 @@ export class JsonHTTPServerTransport implements Transport {
   }
 
   async send(message: JSONRPCMessage, options?: TransportSendOptions): Promise<void> {
-    // If SSE is connected, stream all server -> client messages via SSE
+    let relatedId = options?.relatedRequestId;
+    if (isJSONRPCResponse(message) || isJSONRPCError(message)) {
+      relatedId = message.id;
+    }
+    // If a related HTTP connection is pending, complete it with JSON
+    if (relatedId !== undefined) {
+      const connId = this.requestIdToConn.get(relatedId);
+      if (connId) {
+        const ctx = this.connections.get(connId);
+        if (!ctx) throw new Error(`HTTP connection closed for request ${String(relatedId)}`);
+
+        ctx.responses.set(relatedId, message);
+        const allReady = ctx.orderedIds.every((id) => ctx.responses.has(id));
+        if (!allReady) return;
+
+        const body =
+          ctx.orderedIds.length === 1
+            ? ctx.responses.get(ctx.orderedIds[0]!)
+            : ctx.orderedIds.map((id) => ctx.responses.get(id));
+
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        ctx.res.writeHead(200, headers);
+        ctx.res.end(JSON.stringify(body));
+
+        this.connections.delete(connId);
+        ctx.orderedIds.forEach((id) => this.requestIdToConn.delete(id));
+        return;
+      }
+    }
+
+    // Otherwise, if SSE is connected, stream server -> client messages via SSE
     if (this.sse && !this.sse.res.writableEnded) {
       const line = `data: ${JSON.stringify(message)}\n\n`;
       this.sse.res.write(line);
       return;
     }
 
-    let relatedId = options?.relatedRequestId;
-    if (isJSONRPCResponse(message) || isJSONRPCError(message)) {
-      relatedId = message.id;
-    }
-    if (relatedId === undefined) {
-      // No place to send notifications/responses without a related request in JSON-only mode
-      return;
-    }
-    const connId = this.requestIdToConn.get(relatedId);
-    if (!connId) throw new Error(`No HTTP connection for request ${String(relatedId)}`);
-    const ctx = this.connections.get(connId);
-    if (!ctx) throw new Error(`HTTP connection closed for request ${String(relatedId)}`);
-
-    ctx.responses.set(relatedId, message);
-    // When all responses for this HTTP request are ready, flush JSON and end
-    const allReady = ctx.orderedIds.every((id) => ctx.responses.has(id));
-    if (!allReady) return;
-
-    const body =
-      ctx.orderedIds.length === 1
-        ? ctx.responses.get(ctx.orderedIds[0]!)
-        : ctx.orderedIds.map((id) => ctx.responses.get(id));
-
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    ctx.res.writeHead(200, headers);
-    ctx.res.end(JSON.stringify(body));
-
-    // Cleanup
-    this.connections.delete(connId);
-    ctx.orderedIds.forEach((id) => this.requestIdToConn.delete(id));
+    // No pending HTTP response and no SSE: drop notifications without a target
+    return;
   }
 
   // Handle HTTP requests: supports POST for JSON and GET for SSE
@@ -240,6 +249,8 @@ export class JsonHTTPServerTransport implements Transport {
           this.onmessage?.(msg, {
             requestInfo: {
               headers: req.headers,
+              method: req.method,
+              transport: 'http',
             },
             authInfo: req.auth,
           });
@@ -250,13 +261,17 @@ export class JsonHTTPServerTransport implements Transport {
 
       const orderedIds: RequestId[] = messages.filter(isJSONRPCRequest).map((m) => m.id);
       const sseConnected = !!this.sse && !this.sse.res.writableEnded;
-      if (sseConnected) {
+      // Prefer JSON response when client explicitly accepts JSON; use SSE only when
+      // Accept doesn't include JSON and an SSE stream is connected
+      if (sseConnected && !acceptsJson) {
         // With SSE, we emit responses on the SSE stream; reply 202 to POST immediately
         res.writeHead(202).end();
         for (const msg of messages) {
           this.onmessage?.(msg, {
             requestInfo: {
               headers: req.headers,
+              method: req.method,
+              transport: 'sse',
             },
             authInfo: req.auth,
           });
@@ -283,6 +298,8 @@ export class JsonHTTPServerTransport implements Transport {
         this.onmessage?.(msg, {
           requestInfo: {
             headers: req.headers,
+            method: req.method,
+            transport: 'http',
           },
           authInfo: req.auth,
         });

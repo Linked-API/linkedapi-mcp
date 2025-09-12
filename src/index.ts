@@ -83,7 +83,18 @@ async function main() {
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-    logger.info('Tool request received');
+    const requestInfoAny = (
+      extra as unknown as { requestInfo?: { method?: string; transport?: string } }
+    )?.requestInfo;
+    const method = requestInfoAny?.method ?? 'N/A';
+    const transportType = (requestInfoAny?.transport as 'http' | 'sse' | undefined) ?? 'N/A';
+    logger.info(
+      {
+        method,
+        transport: transportType,
+      },
+      'Tool request received',
+    );
 
     try {
       const localLinkedApiToken = process.env.LINKED_API_TOKEN;
