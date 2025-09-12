@@ -8,6 +8,8 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { IncomingMessage, ServerResponse } from 'node:http';
 
+import { logger } from './logger';
+
 type RequestId = number | string;
 
 type ConnectionContext = {
@@ -50,6 +52,7 @@ export class JsonHTTPServerTransport implements Transport {
       } catch {
         // ignore
       }
+      logger.info('SSE connection terminated during transport close');
       this.sse = undefined;
     }
     this.connections.forEach((ctx) => {
@@ -144,11 +147,13 @@ export class JsonHTTPServerTransport implements Transport {
           res,
           keepalive,
         };
+        logger.info({ headers: req.headers }, 'SSE connection established');
 
         res.on('close', () => {
           try {
             clearInterval(keepalive);
           } finally {
+            logger.info('SSE connection closed by client');
             this.sse = undefined;
           }
         });
@@ -165,6 +170,13 @@ export class JsonHTTPServerTransport implements Transport {
             },
             id: null,
           }),
+        );
+        logger.warn(
+          {
+            method: req.method,
+            headers: req.headers,
+          },
+          'Rejected non-POST HTTP request',
         );
         return;
       }
@@ -185,6 +197,7 @@ export class JsonHTTPServerTransport implements Transport {
             id: null,
           }),
         );
+        logger.warn({ headers: req.headers }, 'Rejected POST due to unacceptable Accept header');
         return;
       }
 
@@ -201,6 +214,7 @@ export class JsonHTTPServerTransport implements Transport {
             id: null,
           }),
         );
+        logger.warn({ headers: req.headers }, 'Rejected POST due to unsupported Content-Type');
         return;
       }
 
@@ -230,6 +244,7 @@ export class JsonHTTPServerTransport implements Transport {
             authInfo: req.auth,
           });
         }
+        logger.info('Accepted POST without requests (notifications only)');
         return;
       }
 
@@ -246,6 +261,7 @@ export class JsonHTTPServerTransport implements Transport {
             authInfo: req.auth,
           });
         }
+        logger.info('POST handled with SSE active: responded 202 and streaming via SSE');
         return;
       }
 
@@ -271,6 +287,7 @@ export class JsonHTTPServerTransport implements Transport {
           authInfo: req.auth,
         });
       }
+      logger.info({ requestIds: orderedIds }, 'POST handled with JSON response mode');
     } catch (error) {
       this.onerror?.(error as Error);
       res.writeHead(400);
@@ -285,6 +302,7 @@ export class JsonHTTPServerTransport implements Transport {
           id: null,
         }),
       );
+      logger.error(error as Error, 'HTTP request handling parse/validation error');
     }
   }
 }
