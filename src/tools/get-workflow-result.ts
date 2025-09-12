@@ -17,16 +17,22 @@ export class GetWorkflowResultTool extends LinkedApiTool<IGetWorkflowResultParam
     operationName: z.enum(Object.values(OPERATION_NAME)),
   });
 
-  public override async execute(
-    linkedapi: LinkedApi,
-    args: IGetWorkflowResultParams,
-    progressToken?: string | number,
-  ): Promise<TMappedResponse<unknown>> {
+  public override async execute({
+    linkedapi,
+    args: { workflowId, operationName },
+    workflowTimeout,
+    progressToken,
+  }: {
+    linkedapi: LinkedApi;
+    args: IGetWorkflowResultParams;
+    workflowTimeout: number;
+    progressToken?: string | number;
+  }): Promise<TMappedResponse<unknown>> {
     const operation = linkedapi.operations.find(
-      (operation) => operation.operationName === args.operationName,
+      (operation) => operation.operationName === operationName,
     )!;
-    return await executeWithProgress(this.progressCallback, operation, {
-      workflowId: args.workflowId,
+    return await executeWithProgress(this.progressCallback, operation, workflowTimeout, {
+      workflowId,
       progressToken,
     });
   }

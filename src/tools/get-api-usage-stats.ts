@@ -11,10 +11,15 @@ export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAct
     end: z.string(),
   });
 
-  public override async execute(
-    linkedapi: LinkedApi,
-    args: TApiUsageParams,
-  ): Promise<TMappedResponse<TApiUsageAction[]>> {
+  public override async execute({
+    linkedapi,
+    args,
+  }: {
+    linkedapi: LinkedApi;
+    args: TApiUsageParams;
+    workflowTimeout: number;
+    progressToken?: string | number;
+  }): Promise<TMappedResponse<TApiUsageAction[]>> {
     return await linkedapi.getApiUsage(args);
   }
 

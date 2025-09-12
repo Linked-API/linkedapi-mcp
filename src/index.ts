@@ -11,8 +11,8 @@ import http from 'node:http';
 
 import { LinkedApiMCPServer } from './linked-api-server';
 import { availablePrompts, getPromptContent, systemPrompt } from './prompts';
-import { debugLog } from './utils/debug-log';
 import { JsonHTTPServerTransport } from './utils/json-http-transport';
+import { logger } from './utils/logger';
 import { LinkedApiProgressNotification } from './utils/types';
 
 function getArgValue(flag: string): string | undefined {
@@ -83,11 +83,7 @@ async function main() {
   });
 
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-    debugLog('Tool request received', {
-      toolName: request.params.name,
-      arguments: request.params.arguments,
-      progressToken: request.params._meta?.progressToken,
-    });
+    logger.info('Tool request received');
 
     try {
       const localLinkedApiToken = process.env.LINKED_API_TOKEN;
@@ -97,18 +93,30 @@ async function main() {
       const identificationToken = (headers['identification-token'] ??
         localIdentificationToken ??
         '') as string;
+      const mcpClient = (headers['client'] ?? '') as string;
 
       const result = await linkedApiServer.executeWithTokens(request.params, {
         linkedApiToken,
         identificationToken,
+        mcpClient,
       });
       return result;
     } catch (error) {
-      debugLog('Tool execution failed', {
-        toolName: request.params.name,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
+      logger.error(
+        {
+          toolName: request.params.name,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Critical tool execution error',
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'Unknown error. Please try again.',
+          },
+        ],
+      };
     }
   });
 
@@ -130,36 +138,40 @@ async function main() {
         // Set query parameters to headers if they are not set
         const linkedApiTokenQP = url.searchParams.get('linked-api-token');
         const identificationTokenQP = url.searchParams.get('identification-token');
+        const mcpClient = url.searchParams.get('client');
         if (!req.headers['linked-api-token'] && linkedApiTokenQP) {
           req.headers['linked-api-token'] = linkedApiTokenQP;
         }
         if (!req.headers['identification-token'] && identificationTokenQP) {
           req.headers['identification-token'] = identificationTokenQP;
         }
+        if (!req.headers['client'] && mcpClient) {
+          req.headers['client'] = mcpClient;
+        }
         await transport.handleRequest(req, res);
       } catch (error) {
-        debugLog('HTTP request handling failed', {
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.error(
+          {
+            error: error instanceof Error ? error.message : String(error),
+          },
+          'HTTP request handling failed',
+        );
         res.statusCode = 500;
         res.end('Internal Server Error');
       }
     });
 
     httpServer.listen(port, host, () => {
-      debugLog('HTTP transport listening', {
-        host,
-        port,
-      });
+      logger.info({ host }, `HTTP transport listening on port ${port}`);
     });
   } else {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    debugLog('stdio transport connected');
+    logger.info('stdio transport connected');
   }
 }
 
 main().catch((error) => {
-  debugLog('Fatal error', error);
+  logger.error(error, 'Fatal error');
   process.exit(1);
 });

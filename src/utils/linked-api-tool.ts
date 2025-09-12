@@ -20,25 +20,37 @@ export abstract class LinkedApiTool<TParams, TResult> {
     return this.schema.parse(args) as TParams;
   }
 
-  public abstract execute(
-    linkedapi: LinkedApi,
-    args: TParams,
-    progressToken?: string | number,
-  ): Promise<TMappedResponse<TResult>>;
+  public abstract execute({
+    linkedapi,
+    args,
+    workflowTimeout,
+    progressToken,
+  }: {
+    linkedapi: LinkedApi;
+    args: TParams;
+    workflowTimeout: number;
+    progressToken?: string | number;
+  }): Promise<TMappedResponse<TResult>>;
 }
 
 export abstract class OperationTool<TParams, TResult> extends LinkedApiTool<TParams, TResult> {
   public abstract readonly operationName: TOperationName;
 
-  public override execute(
-    linkedapi: LinkedApi,
-    args: TParams,
-    progressToken?: string | number,
-  ): Promise<TMappedResponse<TResult>> {
+  public override execute({
+    linkedapi,
+    args,
+    workflowTimeout,
+    progressToken,
+  }: {
+    linkedapi: LinkedApi;
+    args: TParams;
+    workflowTimeout: number;
+    progressToken?: string | number;
+  }): Promise<TMappedResponse<TResult>> {
     const operation = linkedapi.operations.find(
       (operation) => operation.operationName === this.operationName,
     )! as Operation<TParams, TResult>;
-    return executeWithProgress(this.progressCallback, operation, {
+    return executeWithProgress(this.progressCallback, operation, workflowTimeout, {
       params: args,
       progressToken,
     });

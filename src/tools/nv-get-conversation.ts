@@ -14,16 +14,15 @@ export class NvGetConversationTool extends LinkedApiTool<
     since: z.string().optional(),
   });
 
-  public override async execute(
-    linkedapi: LinkedApi,
-    {
-      personUrl,
-      since,
-    }: {
-      personUrl: string;
-      since?: string;
-    },
-  ): Promise<TMappedResponse<TConversationPollResult>> {
+  public override async execute({
+    linkedapi,
+    args: { personUrl, since },
+  }: {
+    linkedapi: LinkedApi;
+    args: { personUrl: string; since?: string };
+    workflowTimeout: number;
+    progressToken?: string | number;
+  }): Promise<TMappedResponse<TConversationPollResult>> {
     const conversations = await this.getConversation(linkedapi, personUrl, since);
     if (conversations.errors.length === 0) {
       return conversations;

@@ -5,13 +5,13 @@ import { LinkedApiProgressNotification } from './types';
 export async function executeWithProgress<TParams, TResult>(
   progressCallback: (progress: LinkedApiProgressNotification) => void,
   operation: Operation<TParams, TResult>,
+  workflowTimeout: number,
   {
     params,
     workflowId,
     progressToken,
   }: { params?: TParams; workflowId?: string; progressToken?: string | number } = {},
 ): Promise<TMappedResponse<TResult>> {
-  const workflowTimeout = parseInt(process.env.HEALTH_CHECK_PERIOD || '180', 10) * 1000;
   let progress = 0;
 
   progressCallback({

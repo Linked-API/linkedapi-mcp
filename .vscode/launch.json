@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Linked API MCP - HTTP",
+      "request": "launch",
+      "command": "npm run dev:http",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Linked API MCP - STDIO",
+      "request": "launch",
+      "command": "npm run dev:stdio",
+      "envFile": "${workspaceFolder}/.env"
+    },
+  ]
+}
