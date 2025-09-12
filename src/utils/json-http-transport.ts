@@ -17,6 +17,11 @@ type ConnectionContext = {
   responses: Map<RequestId, JSONRPCMessage>;
 };
 
+type SseContext = {
+  res: ServerResponse;
+  keepalive: NodeJS.Timeout;
+};
+
 export class JsonHTTPServerTransport implements Transport {
   public onclose?: () => void;
   public onerror?: (error: Error) => void;
@@ -28,6 +33,7 @@ export class JsonHTTPServerTransport implements Transport {
   private started = false;
   private requestIdToConn = new Map<RequestId, string>();
   private connections = new Map<string, ConnectionContext>();
+  private sse?: SseContext;
 
   async start(): Promise<void> {
     if (this.started) throw new Error('Transport already started');
@@ -35,6 +41,17 @@ export class JsonHTTPServerTransport implements Transport {
   }
 
   async close(): Promise<void> {
+    if (this.sse) {
+      try {
+        clearInterval(this.sse.keepalive);
+        if (!this.sse.res.writableEnded) {
+          this.sse.res.end();
+        }
+      } catch {
+        // ignore
+      }
+      this.sse = undefined;
+    }
     this.connections.forEach((ctx) => {
       try {
         if (!ctx.res.writableEnded) {
@@ -50,6 +67,13 @@ export class JsonHTTPServerTransport implements Transport {
   }
 
   async send(message: JSONRPCMessage, options?: TransportSendOptions): Promise<void> {
+    // If SSE is connected, stream all server -> client messages via SSE
+    if (this.sse && !this.sse.res.writableEnded) {
+      const line = `data: ${JSON.stringify(message)}\n\n`;
+      this.sse.res.write(line);
+      return;
+    }
+
     let relatedId = options?.relatedRequestId;
     if (isJSONRPCResponse(message) || isJSONRPCError(message)) {
       relatedId = message.id;
@@ -82,13 +106,55 @@ export class JsonHTTPServerTransport implements Transport {
     ctx.orderedIds.forEach((id) => this.requestIdToConn.delete(id));
   }
 
-  // Handle only POST requests; no SSE/GET support
+  // Handle HTTP requests: supports POST for JSON and GET for SSE
   async handleRequest(
     req: IncomingMessage & { auth?: unknown },
     res: ServerResponse,
     parsedBody?: unknown,
   ): Promise<void> {
     try {
+      // SSE endpoint: accept GET with text/event-stream
+      const acceptHeader = (req.headers['accept'] || '').toString();
+      if (req.method === 'GET' && acceptHeader.includes('text/event-stream')) {
+        // Close previous SSE if any
+        if (this.sse) {
+          try {
+            clearInterval(this.sse.keepalive);
+            if (!this.sse.res.writableEnded) this.sse.res.end();
+          } catch {
+            // ignore
+          }
+        }
+
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache, no-transform',
+          Connection: 'keep-alive',
+          'X-Accel-Buffering': 'no',
+        });
+        // Send an initial comment to establish the stream
+        res.write(': connected\n\n');
+
+        const keepalive = setInterval(() => {
+          if (res.writableEnded) return;
+          res.write('event: ping\ndata: {}\n\n');
+        }, 25000);
+
+        this.sse = {
+          res,
+          keepalive,
+        };
+
+        res.on('close', () => {
+          try {
+            clearInterval(keepalive);
+          } finally {
+            this.sse = undefined;
+          }
+        });
+        return;
+      }
+
       if (req.method !== 'POST') {
         res.writeHead(405, { Allow: 'POST' }).end(
           JSON.stringify({
@@ -103,15 +169,18 @@ export class JsonHTTPServerTransport implements Transport {
         return;
       }
 
+      // For POST, allow generic Accepts; when SSE is connected, we don't require JSON accept
       const accept = req.headers['accept'];
-      if (!(accept && accept.includes('application/json'))) {
+      const acceptsJson = !!(accept && accept.includes('application/json'));
+      const sseActive = !!this.sse && !this.sse.res.writableEnded;
+      if (!acceptsJson && !sseActive) {
         res.writeHead(406);
         res.end(
           JSON.stringify({
             jsonrpc: '2.0',
             error: {
               code: -32000,
-              message: 'Not Acceptable: Client must accept application/json',
+              message: 'Not Acceptable: Client must accept application/json or have SSE open',
             },
             id: null,
           }),
@@ -165,6 +234,21 @@ export class JsonHTTPServerTransport implements Transport {
       }
 
       const orderedIds: RequestId[] = messages.filter(isJSONRPCRequest).map((m) => m.id);
+      const sseConnected = !!this.sse && !this.sse.res.writableEnded;
+      if (sseConnected) {
+        // With SSE, we emit responses on the SSE stream; reply 202 to POST immediately
+        res.writeHead(202).end();
+        for (const msg of messages) {
+          this.onmessage?.(msg, {
+            requestInfo: {
+              headers: req.headers,
+            },
+            authInfo: req.auth,
+          });
+        }
+        return;
+      }
+
       const connId = `${Date.now()}-${Math.random()}`;
       this.connections.set(connId, {
         res,

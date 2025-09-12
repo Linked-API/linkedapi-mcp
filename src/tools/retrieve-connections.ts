@@ -15,7 +15,7 @@ export class RetrieveConnectionsTool extends OperationTool<
   public override readonly name = 'retrieve_connections';
   public override readonly operationName = OPERATION_NAME.retrieveConnections;
   protected override readonly schema = z.object({
-    limit: z.number().min(1).max(100).optional(),
+    limit: z.number().min(1).max(1000).optional(),
     filter: z
       .object({
         firstName: z.string().optional(),
