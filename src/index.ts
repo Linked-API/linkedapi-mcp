@@ -15,6 +15,24 @@ import { JsonHTTPServerTransport } from './utils/json-http-transport';
 import { logger } from './utils/logger';
 import { LinkedApiProgressNotification } from './utils/types';
 
+function deriveClientFromUserAgent(userAgent: string): string {
+  const ua = userAgent.toLowerCase();
+  if (ua.includes('cursor')) return 'cursor';
+  if (ua.includes('windsurf')) return 'windsurf';
+  if (ua.includes('vscode') || ua.includes('visual studio code')) return 'vscode';
+  if (ua.includes('chatgpt') || ua.includes('openai')) return 'chatgpt';
+  if (ua.includes('curl')) return 'curl';
+  if (ua.includes('postman')) return 'postman';
+  if (
+    ua.includes('mozilla') ||
+    ua.includes('chrome') ||
+    ua.includes('safari') ||
+    ua.includes('firefox')
+  )
+    return 'browser';
+  return userAgent;
+}
+
 function getArgValue(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);
   if (index === -1) return undefined;
@@ -104,7 +122,13 @@ async function main() {
       const identificationToken = (headers['identification-token'] ??
         localIdentificationToken ??
         '') as string;
-      const mcpClient = (headers['client'] ?? '') as string;
+      let mcpClient = (headers['client'] ?? '') as string;
+      if (!mcpClient) {
+        const userAgentHeader = headers['user-agent'];
+        if (typeof userAgentHeader === 'string' && userAgentHeader.trim().length > 0) {
+          mcpClient = deriveClientFromUserAgent(userAgentHeader);
+        }
+      }
 
       const result = await linkedApiServer.executeWithTokens(request.params, {
         linkedApiToken,

@@ -1,16 +1,17 @@
 export function defineRequestTimeoutInSeconds(mcpClient: string): number {
-  const claudeTimeout = 180;
   const bigTimeout = 600;
-  const defaultTimeout = Math.min(claudeTimeout, bigTimeout);
 
+  console.error('mcpClient', mcpClient);
   switch (mcpClient) {
     case 'claude':
-      return claudeTimeout;
+      return 180;
+    case 'chatgpt':
+      return 50;
     case 'cursor':
     case 'vscode':
     case 'windsurf':
       return bigTimeout;
     default:
-      return defaultTimeout;
+      return 60;
   }
 }
