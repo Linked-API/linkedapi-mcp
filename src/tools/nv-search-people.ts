@@ -63,32 +63,40 @@ export class NvSearchPeopleTool extends OperationTool<TNvSearchPeopleParams, unk
                 type: 'array',
                 description:
                   'Optional. Array of free-form strings representing locations. Matches if person is located in any of the listed locations.',
+                items: { type: 'string' },
               },
               industries: {
                 type: 'array',
                 description:
                   'Optional. Array of enums representing industries. Matches if person works in any of the listed industries. Takes specific values available in the LinkedIn interface.',
+                items: { type: 'string' },
               },
               currentCompanies: {
                 type: 'array',
                 description:
                   'Optional. Array of company names. Matches if person currently works at any of the listed companies.',
+                items: { type: 'string' },
               },
               previousCompanies: {
                 type: 'array',
                 description:
                   'Optional. Array of company names. Matches if person previously worked at any of the listed companies.',
+                items: { type: 'string' },
               },
               schools: {
                 type: 'array',
                 description:
                   'Optional. Array of institution names. Matches if person currently attends or previously attended any of the listed institutions.',
+                items: { type: 'string' },
               },
               yearsOfExperiences: {
                 type: 'array',
                 description:
                   "Optional. Array of enums representing professional experience. Matches if person's experience falls within any of the listed ranges.",
-                enum: ['lessThanOne', 'oneToTwo', 'threeToFive', 'sixToTen', 'moreThanTen'],
+                items: {
+                  type: 'string',
+                  enum: ['lessThanOne', 'oneToTwo', 'threeToFive', 'sixToTen', 'moreThanTen'],
+                },
               },
             },
           },

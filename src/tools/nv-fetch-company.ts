@@ -83,27 +83,34 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
                     type: 'array',
                     description:
                       "Optional. Array of job position names. Matches if employee's current position is any of the listed options.",
+                    items: { type: 'string' },
                   },
                   locations: {
                     type: 'array',
                     description:
                       'Optional. Array of free-form strings representing locations. Matches if employee is located in any of the listed locations.',
+                    items: { type: 'string' },
                   },
                   industries: {
                     type: 'array',
                     description:
                       'Optional. Array of enums representing industries. Matches if employee works in any of the listed industries. Takes specific values available in the LinkedIn interface.',
+                    items: { type: 'string' },
                   },
                   schools: {
                     type: 'array',
                     description:
                       'Optional. Array of institution names. Matches if employee currently attends or previously attended any of the listed institutions.',
+                    items: { type: 'string' },
                   },
                   yearsOfExperiences: {
                     type: 'array',
                     description:
                       "Optional. Array of enums representing professional experience. Matches if employee's experience falls within any of the listed ranges.",
-                    enum: ['lessThanOne', 'oneToTwo', 'threeToFive', 'sixToTen', 'moreThanTen'],
+                    items: {
+                      type: 'string',
+                      enum: ['lessThanOne', 'oneToTwo', 'threeToFive', 'sixToTen', 'moreThanTen'],
+                    },
                   },
                 },
               },

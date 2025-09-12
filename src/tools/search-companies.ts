@@ -58,26 +58,31 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
                 type: 'array',
                 description:
                   'Optional. Array of enums representing employee count ranges. Matches if company size falls within any of the listed ranges.',
-                enum: [
-                  '1-10',
-                  '11-50',
-                  '51-200',
-                  '201-500',
-                  '501-1000',
-                  '1001-5000',
-                  '5001-10000',
-                  '10001+',
-                ],
+                items: {
+                  type: 'string',
+                  enum: [
+                    '1-10',
+                    '11-50',
+                    '51-200',
+                    '201-500',
+                    '501-1000',
+                    '1001-5000',
+                    '5001-10000',
+                    '10001+',
+                  ],
+                },
               },
               locations: {
                 type: 'array',
                 description:
                   'Optional. Array of free-form strings representing locations. Matches if company is headquartered in any of the listed locations.',
+                items: { type: 'string' },
               },
               industries: {
                 type: 'array',
                 description:
                   'Optional. Array of enums representing industries. Matches if company works in any of the listed industries. Takes specific values available in the LinkedIn interface.',
+                items: { type: 'string' },
               },
             },
           },
