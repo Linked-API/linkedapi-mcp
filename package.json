@@ -1,6 +1,6 @@
 {
   "name": "linkedapi-mcp",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "MCP server for Linked API",
   "main": "dist/index.js",
   "bin": {
@@ -10,6 +10,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
+    "dev:http": "tsx src/index.ts --http",
+    "dev:stdio": "tsx src/index.ts",
     "start": "node dist/index.js",
     "watch": "tsx watch src/index.ts",
     "clean": "rm -rf dist",

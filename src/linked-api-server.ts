@@ -3,8 +3,9 @@ import { LinkedApi, LinkedApiError, TLinkedApiConfig } from 'linkedapi-node';
 import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
 
 import { LinkedApiTools } from './linked-api-tools';
-import { debugLog } from './utils/debug-log';
+import { defineRequestTimeoutInSeconds } from './utils/define-request-timeout';
 import { handleLinkedApiError } from './utils/handle-linked-api-error';
+import { logger } from './utils/logger';
 import {
   CallToolResult,
   ExtendedCallToolRequest,
@@ -24,26 +25,52 @@ export class LinkedApiMCPServer {
 
   public async executeWithTokens(
     request: ExtendedCallToolRequest['params'],
-    config: TLinkedApiConfig,
+    { linkedApiToken, identificationToken, mcpClient }: TLinkedApiConfig & { mcpClient: string },
   ): Promise<CallToolResult> {
-    const linkedApi = new LinkedApi(
+    const workflowTimeout = defineRequestTimeoutInSeconds(mcpClient) * 1000;
+    logger.info(
+      {
+        toolName: request.name,
+        arguments: request.arguments,
+        mcpClient,
+        workflowTimeout,
+      },
+      'Tool execution started',
+    );
+    const linkedapi = new LinkedApi(
       buildLinkedApiHttpClient(
         {
-          linkedApiToken: config.linkedApiToken!,
-          identificationToken: config.identificationToken!,
+          linkedApiToken: linkedApiToken,
+          identificationToken: identificationToken,
         },
         'mcp',
       ),
     );
 
-    const { name, arguments: args, _meta } = request;
+    const { name: toolName, arguments: args, _meta } = request;
     const progressToken = _meta?.progressToken;
 
+    const startTime = Date.now();
     try {
-      const tool = this.tools.toolByName(name)!;
+      const tool = this.tools.toolByName(toolName)!;
       const params = tool.validate(args);
-      const { data, errors } = await tool.execute(linkedApi, params, progressToken);
+      const { data, errors } = await tool.execute({
+        linkedapi,
+        args: params,
+        workflowTimeout,
+        progressToken,
+      });
+      const endTime = Date.now();
+      const duration = `${((endTime - startTime) / 1000).toFixed(2)} seconds`;
       if (errors.length > 0 && !data) {
+        logger.error(
+          {
+            toolName,
+            duration,
+            errors,
+          },
+          'Tool execution failed',
+        );
         return {
           content: [
             {
@@ -53,6 +80,14 @@ export class LinkedApiMCPServer {
           ],
         };
       }
+      logger.info(
+        {
+          toolName,
+          duration,
+          data,
+        },
+        'Tool execution successful',
+      );
       if (data) {
         return {
           content: [
@@ -72,8 +107,17 @@ export class LinkedApiMCPServer {
         ],
       };
     } catch (error) {
+      const duration = this.calculateDuration(startTime);
       if (error instanceof LinkedApiError) {
         const body = handleLinkedApiError(error);
+        logger.error(
+          {
+            toolName,
+            duration,
+            body,
+          },
+          'Tool execution failed with Linked API error',
+        );
         return {
           content: [
             {
@@ -84,19 +128,29 @@ export class LinkedApiMCPServer {
         };
       }
       const errorMessage = error instanceof Error ? error.message : String(error);
-      debugLog(`Tool ${name} execution failed`, {
-        error: errorMessage,
-        stack: error instanceof Error ? error.stack : undefined,
-      });
+      logger.error(
+        {
+          toolName,
+          duration,
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        'Tool execution failed with unknown error',
+      );
 
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Error executing ${name}: ${errorMessage}`,
+            text: `Error executing ${toolName}: ${errorMessage}`,
           },
         ],
       };
     }
+  }
+
+  private calculateDuration(startTime: number): string {
+    const endTime = Date.now();
+    return `${((endTime - startTime) / 1000).toFixed(2)} seconds`;
   }
 }
