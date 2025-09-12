@@ -26,7 +26,7 @@ export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAct
   public override getTool(): Tool {
     return {
       name: this.name,
-      description: 'Retrieve Linked API usage statistics',
+      description: 'Retrieve Linked API usage statistics. Date range must not exceed 30 days.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -38,7 +38,7 @@ export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAct
           end: {
             type: 'string',
             description:
-              "End date for the statistics period in ISO 8601 format (e.g., '2024-01-31T23:59:59Z')",
+              "End date for the statistics period in ISO 8601 format (e.g., '2024-01-30T00:00:00Z')",
           },
         },
         required: ['start', 'end'],
