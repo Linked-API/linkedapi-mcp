@@ -1,19 +1,21 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Injectable, Logger } from '@nestjs/common';
 import { LinkedApi, LinkedApiError, TLinkedApiConfig } from 'linkedapi-node';
 import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
 
 import { LinkedApiTools } from './linked-api-tools';
 import { defineRequestTimeoutInSeconds } from './utils/define-request-timeout';
 import { handleLinkedApiError } from './utils/handle-linked-api-error';
-import { logger } from './utils/logger';
 import {
   CallToolResult,
   ExtendedCallToolRequest,
   LinkedApiProgressNotification,
 } from './utils/types';
 
+@Injectable()
 export class LinkedApiMCPServer {
-  private tools: LinkedApiTools;
+  public readonly tools: LinkedApiTools;
+  private readonly logger = new Logger(LinkedApiMCPServer.name);
 
   constructor(progressCallback: (notification: LinkedApiProgressNotification) => void) {
     this.tools = new LinkedApiTools(progressCallback);
@@ -28,7 +30,7 @@ export class LinkedApiMCPServer {
     { linkedApiToken, identificationToken, mcpClient }: TLinkedApiConfig & { mcpClient: string },
   ): Promise<CallToolResult> {
     const workflowTimeout = defineRequestTimeoutInSeconds(mcpClient) * 1000;
-    logger.info(
+    this.logger.log(
       {
         toolName: request.name,
         arguments: request.arguments,
@@ -63,7 +65,7 @@ export class LinkedApiMCPServer {
       const endTime = Date.now();
       const duration = `${((endTime - startTime) / 1000).toFixed(2)} seconds`;
       if (errors.length > 0 && !data) {
-        logger.error(
+        this.logger.error(
           {
             toolName,
             duration,
@@ -80,7 +82,7 @@ export class LinkedApiMCPServer {
           ],
         };
       }
-      logger.info(
+      this.logger.log(
         {
           toolName,
           duration,
@@ -110,7 +112,7 @@ export class LinkedApiMCPServer {
       const duration = this.calculateDuration(startTime);
       if (error instanceof LinkedApiError) {
         const body = handleLinkedApiError(error);
-        logger.error(
+        this.logger.error(
           {
             toolName,
             duration,
@@ -128,7 +130,7 @@ export class LinkedApiMCPServer {
         };
       }
       const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.error(
+      this.logger.error(
         {
           toolName,
           duration,
