@@ -15,7 +15,7 @@ export class RetrieveConnectionsTool extends OperationTool<
   public override readonly name = 'retrieve_connections';
   public override readonly operationName = OPERATION_NAME.retrieveConnections;
   protected override readonly schema = z.object({
-    limit: z.number().min(1).max(1000).optional(),
+    limit: z.number().min(1).max(500).optional(),
     filter: z
       .object({
         firstName: z.string().optional(),
@@ -41,7 +41,7 @@ export class RetrieveConnectionsTool extends OperationTool<
           limit: {
             type: 'number',
             description:
-              'Optional. Number of connections to return. Defaults to 500, with a maximum value of 1000.',
+              'Optional. Number of connections to return. Defaults to 10, with a maximum value of 500.',
           },
           filter: {
             type: 'object',
