@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/linked-api-linkedapi-mcp-badge.png)](https://mseep.ai/app/linked-api-linkedapi-mcp)
+
 Linked API MCP server connects your LinkedIn account to AI assistants like Claude, Cursor, and VS Code. Ask them to search for leads, send messages, analyze profiles, and much more – they'll handle it through our cloud browser, safely and automatically.
 
 ## Use cases
