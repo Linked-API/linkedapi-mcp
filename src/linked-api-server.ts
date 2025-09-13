@@ -6,19 +6,15 @@ import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
 import { LinkedApiTools } from './linked-api-tools';
 import { defineRequestTimeoutInSeconds } from './utils/define-request-timeout';
 import { handleLinkedApiError } from './utils/handle-linked-api-error';
-import {
-  CallToolResult,
-  ExtendedCallToolRequest,
-  LinkedApiProgressNotification,
-} from './utils/types';
+import { CallToolResult, ExtendedCallToolRequest } from './utils/types';
 
 @Injectable()
 export class LinkedApiMCPServer {
   public readonly tools: LinkedApiTools;
   private readonly logger = new Logger(LinkedApiMCPServer.name);
 
-  constructor(progressCallback: (notification: LinkedApiProgressNotification) => void) {
-    this.tools = new LinkedApiTools(progressCallback);
+  constructor() {
+    this.tools = new LinkedApiTools(() => {});
   }
 
   public getTools(): Tool[] {

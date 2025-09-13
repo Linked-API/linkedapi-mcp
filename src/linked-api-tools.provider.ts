@@ -1,5 +1,5 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { MCP_TOOL_METADATA_KEY, McpRegistryService } from '@rekog/mcp-nest';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { MCP_TOOL_METADATA_KEY } from '@rekog/mcp-nest';
 import 'reflect-metadata';
 import { URL } from 'url';
 
@@ -10,11 +10,7 @@ import { deriveClientFromUserAgent } from './utils/client';
 export class LinkedApiToolsProvider implements OnModuleInit {
   private readonly logger = new Logger(LinkedApiToolsProvider.name);
 
-  constructor(
-    private readonly registry: McpRegistryService,
-    private readonly linkedApiServer: LinkedApiMCPServer,
-    @Inject('MCP_MODULE_ID') private readonly mcpModuleId: string,
-  ) {}
+  constructor(private readonly linkedApiServer: LinkedApiMCPServer) {}
 
   onModuleInit(): void {
     for (const tool of this.linkedApiServer.tools.tools) {
@@ -83,16 +79,6 @@ mcpClient },
         parameters: (tool as unknown as { schema: unknown }).schema,
       };
       Reflect.defineMetadata(MCP_TOOL_METADATA_KEY, metadata, methodRef);
-      (
-        this.registry as unknown as {
-          addDiscoveryTool: (
-            moduleId: string,
-            method: unknown,
-            provider: unknown,
-            name: string,
-          ) => void;
-        }
-      ).addDiscoveryTool(this.mcpModuleId, methodRef, LinkedApiToolsProvider, methodName);
     }
   }
 }

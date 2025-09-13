@@ -1,5 +1,5 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { MCP_PROMPT_METADATA_KEY, McpRegistryService } from '@rekog/mcp-nest';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { MCP_PROMPT_METADATA_KEY } from '@rekog/mcp-nest';
 import 'reflect-metadata';
 import { z } from 'zod';
 
@@ -7,10 +7,7 @@ import { availablePrompts, getPromptContent } from './prompts';
 
 @Injectable()
 export class LinkedApiPromptsProvider implements OnModuleInit {
-  constructor(
-    private readonly registry: McpRegistryService,
-    @Inject('MCP_MODULE_ID') private readonly mcpModuleId: string,
-  ) {}
+  constructor() {}
 
   onModuleInit(): void {
     for (const prompt of availablePrompts) {
@@ -39,16 +36,6 @@ text: content },
         parameters: z.object({}),
       };
       Reflect.defineMetadata(MCP_PROMPT_METADATA_KEY, metadata, methodRef);
-      (
-        this.registry as unknown as {
-          addDiscoveryPrompt: (
-            moduleId: string,
-            method: unknown,
-            provider: unknown,
-            name: string,
-          ) => void;
-        }
-      ).addDiscoveryPrompt(this.mcpModuleId, methodRef, LinkedApiPromptsProvider, methodName);
     }
   }
 }
