@@ -9,7 +9,7 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
   public override readonly operationName = OPERATION_NAME.searchCompanies;
   protected override readonly schema = z.object({
     term: z.string().optional(),
-    limit: z.number().min(1).max(100).optional(),
+    limit: z.number().min(1).max(1000).optional(),
     filter: z
       .object({
         locations: z.array(z.string()).optional(),
@@ -47,7 +47,7 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
           limit: {
             type: 'number',
             description:
-              'Optional. Number of search results to return. Defaults to 10, with a maximum value of 100.',
+              'Optional. Number of search results to return. Defaults to 10, with a maximum value of 1000.',
           },
           filter: {
             type: 'object',

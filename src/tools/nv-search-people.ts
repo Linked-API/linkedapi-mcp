@@ -9,7 +9,7 @@ export class NvSearchPeopleTool extends OperationTool<TNvSearchPeopleParams, unk
   public override readonly operationName = OPERATION_NAME.nvSearchPeople;
   protected override readonly schema = z.object({
     term: z.string().optional(),
-    limit: z.number().min(1).max(100).optional(),
+    limit: z.number().min(1).max(2500).optional(),
     filter: z
       .object({
         firstName: z.string().optional(),
@@ -40,7 +40,7 @@ export class NvSearchPeopleTool extends OperationTool<TNvSearchPeopleParams, unk
           limit: {
             type: 'number',
             description:
-              'Optional. Number of search results to return. Defaults to 10, with a maximum value of 100.',
+              'Optional. Number of search results to return. Defaults to 25, with a maximum value of 2500.',
           },
           filter: {
             type: 'object',
