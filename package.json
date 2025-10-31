@@ -1,6 +1,6 @@
 {
   "name": "linkedapi-mcp",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "MCP server for Linked API",
   "main": "dist/index.js",
   "bin": {
@@ -31,7 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.4",
-    "linkedapi-node": "^1.2.2",
+    "linkedapi-node": "^1.2.7",
     "zod": "^4.1.1"
   },
   "devDependencies": {
