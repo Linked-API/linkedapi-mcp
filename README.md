@@ -1,3 +1,9 @@
+# Linked API MCP server
+
+<a href="https://glama.ai/mcp/servers/@Linked-API/linkedapi-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@Linked-API/linkedapi-mcp/badge" alt="Linked API MCP server" />
+</a>
+
 Linked API MCP server connects your LinkedIn account to AI assistants like Claude, Cursor, and VS Code. Ask them to search for leads, send messages, analyze profiles, and much more – they'll handle it through our cloud browser, safely and automatically.
 
 ## Use cases
