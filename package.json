@@ -1,7 +1,7 @@
 {
   "name": "linkedapi-mcp",
-  "version": "0.3.4",
-  "description": "MCP server for Linked API",
+  "version": "0.3.6",
+  "description": "MCP server that lets AI assistants control LinkedIn accounts and retrieve real-time data.",
   "main": "dist/index.js",
   "bin": {
     "linkedapi-mcp": "dist/index.js"
