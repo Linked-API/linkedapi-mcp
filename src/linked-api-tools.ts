@@ -1,5 +1,6 @@
 import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
+import { CreatePostTool } from './tools/create-post.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
 import { FetchCompanyTool } from './tools/fetch-company.js';
 import { FetchPersonTool } from './tools/fetch-person.js';
@@ -48,6 +49,7 @@ export class LinkedApiTools {
       new FetchPostTool(progressCallback),
       new ReactToPostTool(progressCallback),
       new CommentOnPostTool(progressCallback),
+      new CreatePostTool(progressCallback),
       new RetrieveSSITool(progressCallback),
       new RetrievePerformanceTool(progressCallback),
       // Sales Navigator tools
