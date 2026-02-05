@@ -16,6 +16,7 @@ export class RetrieveConnectionsTool extends OperationTool<
   public override readonly operationName = OPERATION_NAME.retrieveConnections;
   protected override readonly schema = z.object({
     limit: z.number().min(1).max(1000).optional(),
+    since: z.string().optional(),
     filter: z
       .object({
         firstName: z.string().optional(),
@@ -42,6 +43,11 @@ export class RetrieveConnectionsTool extends OperationTool<
             type: 'number',
             description:
               'Optional. Number of connections to return. Defaults to 10, with a maximum value of 1000.',
+          },
+          since: {
+            type: 'string',
+            description:
+              'Optional. ISO date string that filters connections to only include those made on or after the specified date. Only works when filter is not provided.',
           },
           filter: {
             type: 'object',

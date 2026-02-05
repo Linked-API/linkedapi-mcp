@@ -52,7 +52,10 @@ export class LinkedApiMCPServer {
 
     const startTime = Date.now();
     try {
-      const tool = this.tools.toolByName(toolName)!;
+      const tool = this.tools.toolByName(toolName);
+      if (!tool) {
+        throw new Error(`Unknown tool: ${toolName}`);
+      }
       const params = tool.validate(args);
       const { data, errors } = await tool.execute({
         linkedapi,
