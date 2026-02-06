@@ -22,13 +22,13 @@ export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> 
         since: z.string().optional(),
       })
       .optional(),
-    commentRetrievalConfig: z
+    commentsRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(20).optional(),
         since: z.string().optional(),
       })
       .optional(),
-    reactionRetrievalConfig: z
+    reactionsRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(20).optional(),
         since: z.string().optional(),
@@ -103,7 +103,7 @@ export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> 
               },
             },
           },
-          commentRetrievalConfig: {
+          commentsRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving comments. Available only if retrieveComments is true.',
@@ -120,7 +120,7 @@ export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> 
               },
             },
           },
-          reactionRetrievalConfig: {
+          reactionsRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving reactions. Available only if retrieveReactions is true.',

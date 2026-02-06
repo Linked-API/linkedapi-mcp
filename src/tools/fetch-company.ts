@@ -12,18 +12,18 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
     retrieveEmployees: z.boolean().optional().default(false),
     retrievePosts: z.boolean().optional().default(false),
     retrieveDMs: z.boolean().optional().default(false),
-    postRetrievalConfig: z
+    postsRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(20).optional(),
         since: z.string().optional(),
       })
       .optional(),
-    dmRetrievalConfig: z
+    dmsRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(20).optional(),
       })
       .optional(),
-    employeeRetrievalConfig: z
+    employeesRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(500).optional(),
         filter: z
@@ -68,7 +68,7 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
             description:
               "Optional. Whether to retrieve the company's decision makers information. Default is false.",
           },
-          postRetrievalConfig: {
+          postsRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving posts. Available only if retrievePosts is true.',
@@ -85,7 +85,7 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
               },
             },
           },
-          dmRetrievalConfig: {
+          dmsRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving decision makers. Available only if retrieveDMs is true.',
@@ -97,7 +97,7 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
               },
             },
           },
-          employeeRetrievalConfig: {
+          employeesRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving employees. Available only if retrieveEmployees is true.',

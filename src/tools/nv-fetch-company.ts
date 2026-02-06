@@ -11,7 +11,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
     companyHashedUrl: z.string(),
     retrieveEmployees: z.boolean().optional().default(false),
     retrieveDMs: z.boolean().optional().default(false),
-    employeeRetrievalConfig: z
+    employeesRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(500).optional(),
         filter: z
@@ -27,7 +27,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
           .optional(),
       })
       .optional(),
-    dmRetrievalConfig: z
+    dmsRetrievalConfig: z
       .object({
         limit: z.number().min(1).max(20).optional(),
       })
@@ -56,7 +56,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
             description:
               "Optional. Whether to retrieve the company's decision makers information. Default is false.",
           },
-          employeeRetrievalConfig: {
+          employeesRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving employees. Available only if retrieveEmployees is true.',
@@ -116,7 +116,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
               },
             },
           },
-          dmRetrievalConfig: {
+          dmsRetrievalConfig: {
             type: 'object',
             description:
               'Optional. Configuration for retrieving decision makers. Available only if retrieveDMs is true.',
