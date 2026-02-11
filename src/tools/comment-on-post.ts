@@ -10,6 +10,7 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unkno
   protected override readonly schema = z.object({
     postUrl: z.string(),
     text: z.string().min(1),
+    companyUrl: z.string().optional(),
   });
 
   public override getTool(): Tool {
@@ -27,6 +28,11 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unkno
           text: {
             type: 'string',
             description: 'Comment text, must be up to 1000 characters.',
+          },
+          companyUrl: {
+            type: 'string',
+            description:
+              "LinkedIn company page URL. If specified, the comment will be added on behalf of the company. (e.g., 'https://www.linkedin.com/company/acme-corp')",
           },
         },
         required: ['postUrl', 'text'],

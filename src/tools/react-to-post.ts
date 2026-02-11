@@ -10,6 +10,7 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
   protected override readonly schema = z.object({
     postUrl: z.string(),
     type: z.enum(['like', 'love', 'celebrate', 'support', 'funny', 'insightful']).or(z.string()),
+    companyUrl: z.string().optional(),
   });
 
   public override getTool(): Tool {
@@ -29,6 +30,11 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
             type: 'string',
             description: 'Enum describing the reaction type.',
             enum: ['like', 'love', 'support', 'celebrate', 'insightful', 'funny'],
+          },
+          companyUrl: {
+            type: 'string',
+            description:
+              "LinkedIn company page URL. If specified, the reaction will be added on behalf of the company. (e.g., 'https://www.linkedin.com/company/acme-corp')",
           },
         },
         required: ['postUrl', 'type'],
