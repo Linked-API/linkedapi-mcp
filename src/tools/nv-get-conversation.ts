@@ -1,5 +1,5 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import LinkedApi, { TConversationPollResult, TMappedResponse } from '@linkedapi/node';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import z from 'zod';
 
 import { LinkedApiTool } from '../utils/linked-api-tool.js';

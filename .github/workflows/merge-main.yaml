@@ -70,7 +70,7 @@ jobs:
         id: version-check
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          NPM_VERSION=$(npm view linkedapi-mcp version 2>/dev/null || echo "0.0.0")
+          NPM_VERSION=$(npm view @linkedapi/mcp version 2>/dev/null || echo "0.0.0")
           if [ "$PACKAGE_VERSION" != "$NPM_VERSION" ]; then
             echo "should_publish=true" >> $GITHUB_OUTPUT
             echo "Version changed: $NPM_VERSION -> $PACKAGE_VERSION"
@@ -81,7 +81,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.version-check.outputs.should_publish == 'true'
-        run: npm publish
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

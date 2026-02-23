@@ -1,5 +1,5 @@
 {
-  "name": "linkedapi-mcp",
+  "name": "@linkedapi/mcp",
   "version": "0.3.11",
   "description": "MCP server that lets AI assistants control LinkedIn accounts and retrieve real-time data.",
   "main": "dist/index.js",
