@@ -1,4 +1,4 @@
-import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from 'linkedapi-node';
+import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from '@linkedapi/node';
 
 import { LinkedApiProgressNotification } from './types';
 

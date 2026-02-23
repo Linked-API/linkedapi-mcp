@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { TApiUsageAction, TApiUsageParams, TMappedResponse } from 'linkedapi-node';
+import LinkedApi, { TApiUsageAction, TApiUsageParams, TMappedResponse } from '@linkedapi/node';
 import z from 'zod';
 
 import { LinkedApiTool } from '../utils/linked-api-tool.js';

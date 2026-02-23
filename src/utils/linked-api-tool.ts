@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { Operation, TMappedResponse, TOperationName } from 'linkedapi-node';
+import LinkedApi, { Operation, TMappedResponse, TOperationName } from '@linkedapi/node';
 import { LinkedApiProgressNotification } from 'src/utils/types';
 import z from 'zod';
 

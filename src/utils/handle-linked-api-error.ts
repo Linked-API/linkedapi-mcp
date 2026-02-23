@@ -1,4 +1,4 @@
-import { LinkedApiError, LinkedApiWorkflowTimeoutError } from 'linkedapi-node';
+import { LinkedApiError, LinkedApiWorkflowTimeoutError } from '@linkedapi/node';
 
 import { authenticationPrompt } from '../prompts';
 

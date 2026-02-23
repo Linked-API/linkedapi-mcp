@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import LinkedApi, { OPERATION_NAME, TMappedResponse } from 'linkedapi-node';
+import LinkedApi, { OPERATION_NAME, TMappedResponse } from '@linkedapi/node';
 import z from 'zod';
 
 import { executeWithProgress } from '../utils/execute-with-progress.js';

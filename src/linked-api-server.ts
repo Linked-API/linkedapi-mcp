@@ -1,6 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { LinkedApi, LinkedApiError, TLinkedApiConfig } from 'linkedapi-node';
-import { buildLinkedApiHttpClient } from 'linkedapi-node/dist/core';
+import { LinkedApi, LinkedApiError, TLinkedApiConfig } from '@linkedapi/node';
+import { buildLinkedApiHttpClient } from '@linkedapi/node/dist/core';
 
 import { LinkedApiTools } from './linked-api-tools';
 import { defineRequestTimeoutInSeconds } from './utils/define-request-timeout';

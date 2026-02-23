@@ -3,7 +3,7 @@ import {
   OPERATION_NAME,
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult,
-} from 'linkedapi-node';
+} from '@linkedapi/node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';

@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { OPERATION_NAME, TWithdrawConnectionRequestParams } from 'linkedapi-node';
+import { OPERATION_NAME, TWithdrawConnectionRequestParams } from '@linkedapi/node';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
