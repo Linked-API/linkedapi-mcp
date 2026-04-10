@@ -1,3 +1,13 @@
+import { AdminConnectAccountTool } from './tools/admin-connect-account.js';
+import { AdminDisconnectAccountTool } from './tools/admin-disconnect-account.js';
+import { AdminGetAccountsTool } from './tools/admin-get-accounts.js';
+import { AdminGetLimitsUsageTool } from './tools/admin-get-limits-usage.js';
+import { AdminGetSeatsTool } from './tools/admin-get-seats.js';
+import { AdminGetSubscriptionStatusTool } from './tools/admin-get-subscription-status.js';
+import { AdminRegenerateTokenTool } from './tools/admin-regenerate-token.js';
+import { AdminResetLimitsTool } from './tools/admin-reset-limits.js';
+import { AdminSetLimitsTool } from './tools/admin-set-limits.js';
+import { AdminSetSeatsTool } from './tools/admin-set-seats.js';
 import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { CreatePostTool } from './tools/create-post.js';
@@ -25,11 +35,13 @@ import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
+import { AdminTool } from './utils/admin-tool.js';
 import { LinkedApiTool } from './utils/linked-api-tool.js';
 import { LinkedApiProgressNotification } from './utils/types.js';
 
 export class LinkedApiTools {
   public readonly tools: ReadonlyArray<LinkedApiTool<unknown, unknown>>;
+  public readonly adminTools: ReadonlyArray<AdminTool<unknown, unknown>>;
 
   constructor(progressCallback: (progress: LinkedApiProgressNotification) => void) {
     this.tools = [
@@ -64,9 +76,26 @@ export class LinkedApiTools {
       new GetWorkflowResultTool(progressCallback),
       new GetApiUsageTool(progressCallback),
     ];
+
+    this.adminTools = [
+      new AdminGetSubscriptionStatusTool(),
+      new AdminGetSeatsTool(),
+      new AdminSetSeatsTool(),
+      new AdminGetAccountsTool(),
+      new AdminConnectAccountTool(),
+      new AdminDisconnectAccountTool(),
+      new AdminRegenerateTokenTool(),
+      new AdminGetLimitsUsageTool(),
+      new AdminSetLimitsTool(),
+      new AdminResetLimitsTool(),
+    ];
   }
 
   public toolByName(name: string): LinkedApiTool<unknown, unknown> | undefined {
     return this.tools.find((tool) => tool.name === name);
+  }
+
+  public adminToolByName(name: string): AdminTool<unknown, unknown> | undefined {
+    return this.adminTools.find((tool) => tool.name === name);
   }
 }

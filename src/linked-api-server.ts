@@ -1,4 +1,4 @@
-import { LinkedApi, LinkedApiError, TLinkedApiConfig } from '@linkedapi/node';
+import { LinkedApi, LinkedApiAdmin, LinkedApiError, TLinkedApiConfig } from '@linkedapi/node';
 import { buildLinkedApiHttpClient } from '@linkedapi/node/dist/core';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
@@ -20,7 +20,9 @@ export class LinkedApiMCPServer {
   }
 
   public getTools(): Tool[] {
-    return this.tools.tools.map((tool) => tool.getTool());
+    const linkedApiTools = this.tools.tools.map((tool) => tool.getTool());
+    const adminTools = this.tools.adminTools.map((tool) => tool.getTool());
+    return [...linkedApiTools, ...adminTools];
   }
 
   public async executeWithTokens(
@@ -37,21 +39,42 @@ export class LinkedApiMCPServer {
       },
       'Tool execution started',
     );
-    const linkedapi = new LinkedApi(
-      buildLinkedApiHttpClient(
-        {
-          linkedApiToken: linkedApiToken,
-          identificationToken: identificationToken,
-        },
-        'mcp',
-      ),
-    );
-
     const { name: toolName, arguments: args, _meta } = request;
     const progressToken = _meta?.progressToken;
 
     const startTime = Date.now();
     try {
+      const adminTool = this.tools.adminToolByName(toolName);
+      if (adminTool) {
+        const admin = new LinkedApiAdmin({ linkedApiToken,
+client: 'mcp' });
+        const params = adminTool.validate(args);
+        const result = await adminTool.execute({ admin,
+args: params });
+        const duration = this.calculateDuration(startTime);
+        logger.info({ toolName,
+duration,
+data: result }, 'Tool execution successful');
+        if (result === undefined) {
+          return { content: [{ type: 'text' as const,
+text: 'Completed' }] };
+        }
+        return {
+          content: [{ type: 'text' as const,
+text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      const linkedapi = new LinkedApi(
+        buildLinkedApiHttpClient(
+          {
+            linkedApiToken: linkedApiToken,
+            identificationToken: identificationToken,
+          },
+          'mcp',
+        ),
+      );
+
       const tool = this.tools.toolByName(toolName);
       if (!tool) {
         throw new Error(`Unknown tool: ${toolName}`);

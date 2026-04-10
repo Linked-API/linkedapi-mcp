@@ -1,6 +1,6 @@
 {
   "name": "@linkedapi/mcp",
-  "version": "0.3.11",
+  "version": "1.0.0",
   "description": "MCP server that lets AI assistants control LinkedIn accounts and retrieve real-time data.",
   "main": "dist/index.js",
   "bin": {
@@ -30,8 +30,8 @@
   "author": "Linked API",
   "license": "MIT",
   "dependencies": {
+    "@linkedapi/node": "^1.2.18",
     "@modelcontextprotocol/sdk": "^1.17.4",
-    "@linkedapi/node": "^1.2.17",
     "zod": "^4.1.1"
   },
   "devDependencies": {
