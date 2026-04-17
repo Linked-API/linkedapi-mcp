@@ -15,3 +15,8 @@ To start using Linked API MCP, spend 2 minutes reading these essential guides:
 
 ## License
 This project is licensed under the MIT – see the [LICENSE](https://github.com/Linked-API/linkedapi-mcp/blob/main/LICENSE) file for details.
+
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/linked-api-linkedapi-mcp).
+
