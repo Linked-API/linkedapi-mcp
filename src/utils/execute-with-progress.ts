@@ -2,23 +2,33 @@ import { LinkedApiWorkflowTimeoutError, Operation, TMappedResponse } from '@link
 
 import { LinkedApiProgressNotification } from './types';
 
-export async function executeWithProgress<TParams, TResult>(
-  progressCallback: (progress: LinkedApiProgressNotification) => void,
-  operation: Operation<TParams, TResult>,
-  workflowTimeout: number,
-  {
-    params,
-    workflowId,
-    progressToken,
-  }: { params?: TParams; workflowId?: string; progressToken?: string | number } = {},
-): Promise<TMappedResponse<TResult>> {
+const WORKFLOW_PROGRESS_TOTAL = 100 as const;
+const MIN_PROGRESS_INTERVAL = 10000 as const;
+
+interface TExecuteWithProgressOptions<TParams, TResult> {
+  progressCallback: (progress: LinkedApiProgressNotification) => void;
+  operation: Operation<TParams, TResult>;
+  workflowTimeout: number;
+  params?: TParams;
+  workflowId?: string;
+  progressToken?: string | number;
+}
+
+export async function executeWithProgress<TParams, TResult>({
+  progressCallback,
+  operation,
+  workflowTimeout,
+  params,
+  workflowId,
+  progressToken,
+}: TExecuteWithProgressOptions<TParams, TResult>): Promise<TMappedResponse<TResult>> {
   let progress = 0;
 
   progressCallback({
     progressToken,
     progress,
-    total: 100,
-    message: `Starting workflow ${operation.operationName}...`,
+    total: WORKFLOW_PROGRESS_TOTAL,
+    message: `Starting Linked API workflow ${operation.operationName}. The action may enter the cloud-browser queue and take several minutes.`,
   });
 
   const interval = setInterval(
@@ -32,16 +42,22 @@ export async function executeWithProgress<TParams, TResult>(
       progressCallback({
         progressToken,
         progress,
-        total: 100,
-        message: `Executing workflow ${operation.operationName}...`,
+        total: WORKFLOW_PROGRESS_TOTAL,
+        message: `Waiting for workflow ${operation.operationName}. Linked API is still processing it in the background.`,
       });
     },
-    Math.max(workflowTimeout / 20, 10000),
+    Math.max(workflowTimeout / 20, MIN_PROGRESS_INTERVAL),
   );
 
   try {
     if (!workflowId) {
       workflowId = await operation.execute(params as TParams);
+      progressCallback({
+        progressToken,
+        progress,
+        total: WORKFLOW_PROGRESS_TOTAL,
+        message: `Workflow ${operation.operationName} is queued or running in the background. workflowId: ${workflowId}.`,
+      });
     }
     const result = await operation.result(workflowId, {
       timeout: workflowTimeout,
@@ -50,8 +66,8 @@ export async function executeWithProgress<TParams, TResult>(
 
     progressCallback({
       progressToken,
-      progress: 100,
-      total: 100,
+      progress: WORKFLOW_PROGRESS_TOTAL,
+      total: WORKFLOW_PROGRESS_TOTAL,
       message: `Workflow ${operation.operationName} completed successfully`,
     });
 
@@ -66,8 +82,10 @@ export async function executeWithProgress<TParams, TResult>(
   }
 }
 
-function generateTimeoutError(error: LinkedApiWorkflowTimeoutError) {
-  const restoreMessage = `Workflow is running in the background. Continue listening for updates.
+function generateTimeoutError(error: LinkedApiWorkflowTimeoutError): LinkedApiWorkflowTimeoutError {
+  const restoreMessage = `Workflow is still running in Linked API's cloud-browser queue or background worker.
+
+This is not a failure. The original tool already started the workflow, so retrying it can create duplicate queued work.
 
 ACTION REQUIRED (MCP CLIENT):
 - Do not retry the original tool; the workflow is already running

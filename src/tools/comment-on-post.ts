@@ -16,7 +16,8 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unkno
   public override getTool(): Tool {
     return {
       name: this.name,
-      description: 'Allows you to leave a comment on a post (st.commentOnPost action).',
+      description:
+        'Allows you to leave a comment on a post (st.commentOnPost action). If this workflow is still running, do not retry this tool; retrying can post duplicate comments.',
       inputSchema: {
         type: 'object',
         properties: {

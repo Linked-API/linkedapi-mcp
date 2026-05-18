@@ -15,7 +15,8 @@ export class SendMessageTool extends OperationTool<TSendMessageParams, unknown> 
   public override getTool(): Tool {
     return {
       name: this.name,
-      description: 'Allows you to send a message to a person (st.sendMessage action).',
+      description:
+        'Allows you to send a message to a person (st.sendMessage action). If this workflow is still running, do not retry this tool; retrying can send duplicate messages to the same person.',
       inputSchema: {
         type: 'object',
         properties: {

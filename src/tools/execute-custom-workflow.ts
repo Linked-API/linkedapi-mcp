@@ -17,7 +17,8 @@ export class ExecuteCustomWorkflowTool extends OperationTool<
   public override getTool(): Tool {
     return {
       name: this.name,
-      description: 'Execute a custom workflow definition',
+      description:
+        'Execute a custom workflow definition. If this workflow is still running, do not retry this tool; retrying can duplicate any write actions inside the custom workflow.',
       inputSchema: {
         type: 'object',
         properties: { definition: { type: 'object' } },

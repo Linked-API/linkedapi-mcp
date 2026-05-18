@@ -77,12 +77,13 @@ export class JsonHTTPServerTransport implements Transport {
   }
 
   async send(message: JSONRPCMessage, options?: TransportSendOptions): Promise<void> {
+    const isResponse = isJSONRPCResponse(message) || isJSONRPCError(message);
     let relatedId = options?.relatedRequestId;
-    if (isJSONRPCResponse(message) || isJSONRPCError(message)) {
+    if (isResponse) {
       relatedId = message.id;
     }
-    // If a related HTTP connection is pending, complete it with JSON
-    if (relatedId !== undefined) {
+    // If a related HTTP connection is pending, only final responses complete it.
+    if (isResponse && relatedId !== undefined) {
       const connId = this.requestIdToConn.get(relatedId);
       if (connId) {
         const ctx = this.connections.get(connId);

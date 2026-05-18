@@ -17,6 +17,9 @@ import { LinkedApiProgressNotification } from './utils/types';
 
 function deriveClientFromUserAgent(userAgent: string): string {
   const ua = userAgent.toLowerCase();
+  if (ua.includes('codex')) return 'codex';
+  if (ua.includes('claude-code') || ua.includes('claude code')) return 'claude-code';
+  if (ua.includes('claude') || ua.includes('anthropic')) return 'claude';
   if (ua.includes('cursor')) return 'cursor';
   if (ua.includes('windsurf')) return 'windsurf';
   if (ua.includes('vscode') || ua.includes('visual studio code')) return 'vscode';
@@ -31,6 +34,14 @@ function deriveClientFromUserAgent(userAgent: string): string {
   )
     return 'browser';
   return userAgent;
+}
+
+function normalizeHeaderValue(value: string | Array<string> | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value.find((item) => item.trim().length > 0)?.trim();
+  }
+  const normalizedValue = value?.trim();
+  return normalizedValue && normalizedValue.length > 0 ? normalizedValue : undefined;
 }
 
 function getArgValue(flag: string): string | undefined {
@@ -61,8 +72,7 @@ async function main() {
     },
   );
 
-  const progressCallback = (_notification: LinkedApiProgressNotification) => {};
-  const linkedApiServer = new LinkedApiMCPServer(progressCallback);
+  const linkedApiServer = new LinkedApiMCPServer();
 
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const tools = linkedApiServer.getTools();
@@ -118,22 +128,49 @@ async function main() {
       const localLinkedApiToken = process.env.LINKED_API_TOKEN;
       const localIdentificationToken = process.env.IDENTIFICATION_TOKEN;
       const headers = extra?.requestInfo?.headers ?? {};
-      const linkedApiToken = (headers['linked-api-token'] ?? localLinkedApiToken ?? '') as string;
-      const identificationToken = (headers['identification-token'] ??
-        localIdentificationToken ??
-        '') as string;
-      let mcpClient = (headers['client'] ?? '') as string;
+      const linkedApiToken =
+        normalizeHeaderValue(headers['linked-api-token']) ?? localLinkedApiToken ?? '';
+      const identificationToken =
+        normalizeHeaderValue(headers['identification-token']) ?? localIdentificationToken ?? '';
+      let mcpClient = normalizeHeaderValue(headers['client']) ?? '';
       if (!mcpClient) {
-        const userAgentHeader = headers['user-agent'];
-        if (typeof userAgentHeader === 'string' && userAgentHeader.trim().length > 0) {
+        const userAgentHeader = normalizeHeaderValue(headers['user-agent']);
+        if (userAgentHeader) {
           mcpClient = deriveClientFromUserAgent(userAgentHeader);
         }
       }
+      const progressCallback = (notification: LinkedApiProgressNotification): void => {
+        const { progressToken, progress, total, message } = notification;
+        if (progressToken === undefined) {
+          return;
+        }
+
+        void extra
+          .sendNotification({
+            method: 'notifications/progress',
+            params: {
+              progressToken,
+              progress,
+              total,
+              message,
+            },
+          })
+          .catch((error: unknown) => {
+            logger.warn(
+              {
+                toolName: request.params.name,
+                error: error instanceof Error ? error.message : String(error),
+              },
+              'Failed to send MCP progress notification',
+            );
+          });
+      };
 
       const result = await linkedApiServer.executeWithTokens(request.params, {
         linkedApiToken,
         identificationToken,
         mcpClient,
+        progressCallback,
       });
       return result;
     } catch (error) {

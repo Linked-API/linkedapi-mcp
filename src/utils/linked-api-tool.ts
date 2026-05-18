@@ -5,14 +5,17 @@ import z from 'zod';
 
 import { executeWithProgress } from './execute-with-progress';
 
+interface TLinkedApiToolExecuteOptions<TParams> {
+  linkedapi: LinkedApi;
+  args: TParams;
+  workflowTimeout: number;
+  progressToken?: string | number;
+  progressCallback: (progress: LinkedApiProgressNotification) => void;
+}
+
 export abstract class LinkedApiTool<TParams, TResult> {
   public abstract readonly name: string;
   protected abstract readonly schema: z.ZodSchema;
-  protected readonly progressCallback: (progress: LinkedApiProgressNotification) => void;
-
-  constructor(progressCallback: (progress: LinkedApiProgressNotification) => void) {
-    this.progressCallback = progressCallback;
-  }
 
   public abstract getTool(): Tool;
 
@@ -25,12 +28,8 @@ export abstract class LinkedApiTool<TParams, TResult> {
     args,
     workflowTimeout,
     progressToken,
-  }: {
-    linkedapi: LinkedApi;
-    args: TParams;
-    workflowTimeout: number;
-    progressToken?: string | number;
-  }): Promise<TMappedResponse<TResult>>;
+    progressCallback,
+  }: TLinkedApiToolExecuteOptions<TParams>): Promise<TMappedResponse<TResult>>;
 }
 
 export abstract class OperationTool<TParams, TResult> extends LinkedApiTool<TParams, TResult> {
@@ -41,16 +40,15 @@ export abstract class OperationTool<TParams, TResult> extends LinkedApiTool<TPar
     args,
     workflowTimeout,
     progressToken,
-  }: {
-    linkedapi: LinkedApi;
-    args: TParams;
-    workflowTimeout: number;
-    progressToken?: string | number;
-  }): Promise<TMappedResponse<TResult>> {
+    progressCallback,
+  }: TLinkedApiToolExecuteOptions<TParams>): Promise<TMappedResponse<TResult>> {
     const operation = linkedapi.operations.find(
       (operation) => operation.operationName === this.operationName,
     )! as Operation<TParams, TResult>;
-    return executeWithProgress(this.progressCallback, operation, workflowTimeout, {
+    return executeWithProgress({
+      progressCallback,
+      operation,
+      workflowTimeout,
       params: args,
       progressToken,
     });

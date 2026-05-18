@@ -17,7 +17,7 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
     return {
       name: this.name,
       description:
-        'Allows you to react to a post using any available reaction type (st.reactToPost action).',
+        'Allows you to react to a post using any available reaction type (st.reactToPost action). If this workflow is still running, do not retry this tool; retrying can queue duplicate reaction attempts.',
       inputSchema: {
         type: 'object',
         properties: {

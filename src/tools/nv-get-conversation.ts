@@ -1,8 +1,14 @@
-import LinkedApi, { TConversationPollResult, TMappedResponse } from '@linkedapi/node';
+import LinkedApi, {
+  LinkedApiWorkflowTimeoutError,
+  TConversationPollResult,
+  TMappedResponse,
+} from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import z from 'zod';
 
+import { executeWithProgress } from '../utils/execute-with-progress.js';
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvGetConversationTool extends LinkedApiTool<
   { personUrl: string; since?: string },
@@ -17,18 +23,36 @@ export class NvGetConversationTool extends LinkedApiTool<
   public override async execute({
     linkedapi,
     args: { personUrl, since },
+    workflowTimeout,
+    progressToken,
+    progressCallback,
   }: {
     linkedapi: LinkedApi;
     args: { personUrl: string; since?: string };
     workflowTimeout: number;
     progressToken?: string | number;
+    progressCallback: (progress: LinkedApiProgressNotification) => void;
   }): Promise<TMappedResponse<TConversationPollResult>> {
     const conversations = await this.getConversation(linkedapi, personUrl, since);
     if (conversations.errors.length === 0) {
       return conversations;
     }
-    const workflowId = await linkedapi.nvSyncConversation.execute({ personUrl });
-    await linkedapi.nvSyncConversation.result(workflowId);
+    try {
+      await executeWithProgress({
+        progressCallback,
+        operation: linkedapi.nvSyncConversation,
+        workflowTimeout,
+        params: { personUrl },
+        progressToken,
+      });
+    } catch (error) {
+      if (error instanceof LinkedApiWorkflowTimeoutError) {
+        error.message = `${error.message}
+
+After get_workflow_result completes this sync workflow, call nv_get_conversation again with the same personUrl to read the synchronized messages.`;
+      }
+      throw error;
+    }
     return await this.getConversation(linkedapi, personUrl, since);
   }
 

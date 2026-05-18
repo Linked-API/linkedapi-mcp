@@ -4,6 +4,7 @@ import z from 'zod';
 
 import { executeWithProgress } from '../utils/execute-with-progress.js';
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
+import { LinkedApiProgressNotification } from '../utils/types.js';
 
 interface IGetWorkflowResultParams {
   workflowId: string;
@@ -22,16 +23,21 @@ export class GetWorkflowResultTool extends LinkedApiTool<IGetWorkflowResultParam
     args: { workflowId, operationName },
     workflowTimeout,
     progressToken,
+    progressCallback,
   }: {
     linkedapi: LinkedApi;
     args: IGetWorkflowResultParams;
     workflowTimeout: number;
     progressToken?: string | number;
+    progressCallback: (progress: LinkedApiProgressNotification) => void;
   }): Promise<TMappedResponse<unknown>> {
     const operation = linkedapi.operations.find(
       (operation) => operation.operationName === operationName,
     )!;
-    return await executeWithProgress(this.progressCallback, operation, workflowTimeout, {
+    return await executeWithProgress({
+      progressCallback,
+      operation,
+      workflowTimeout,
       workflowId,
       progressToken,
     });
@@ -47,12 +53,13 @@ export class GetWorkflowResultTool extends LinkedApiTool<IGetWorkflowResultParam
         properties: {
           workflowId: {
             type: 'string',
-            description: 'The workflow ID provided in the background workflow status message',
+            description:
+              'Required. The workflow ID provided in the background workflow status message.',
           },
           operationName: {
             type: 'string',
             description:
-              'Optional function name for proper type restoration (provided in background workflow status if available)',
+              'Required. The operationName provided in the background workflow status message. Use the exact value so the result can be restored correctly.',
           },
         },
         required: ['workflowId', 'operationName'],

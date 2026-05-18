@@ -20,7 +20,7 @@ export class SendConnectionRequestTool extends OperationTool<
     return {
       name: this.name,
       description:
-        'Allows you to send a connection request to a person (st.sendConnectionRequest action).',
+        'Allows you to send a connection request to a person (st.sendConnectionRequest action). If this workflow is still running, do not retry this tool; retrying can queue duplicate connection request attempts for the same person.',
       inputSchema: {
         type: 'object',
         properties: {

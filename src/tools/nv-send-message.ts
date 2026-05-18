@@ -17,7 +17,7 @@ export class NvSendMessageTool extends OperationTool<TNvSendMessageParams, unkno
     return {
       name: this.name,
       description:
-        'Allows you to send a message to a person in Sales Navigator (nv.sendMessage action)',
+        'Allows you to send a message to a person in Sales Navigator (nv.sendMessage action). If this workflow is still running, do not retry this tool; retrying can send duplicate Sales Navigator messages to the same person.',
       inputSchema: {
         type: 'object',
         properties: {

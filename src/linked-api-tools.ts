@@ -1,3 +1,6 @@
+import LinkedApi, { TMappedResponse } from '@linkedapi/node';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+
 import { AdminConnectAccountTool } from './tools/admin-connect-account.js';
 import { AdminDisconnectAccountTool } from './tools/admin-disconnect-account.js';
 import { AdminGetAccountsTool } from './tools/admin-get-accounts.js';
@@ -36,45 +39,63 @@ import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
 import { AdminTool } from './utils/admin-tool.js';
-import { LinkedApiTool } from './utils/linked-api-tool.js';
 import { LinkedApiProgressNotification } from './utils/types.js';
 
+interface TRegisteredLinkedApiTool {
+  readonly name: string;
+  getTool(): Tool;
+  validate(args: unknown): unknown;
+  execute({
+    linkedapi,
+    args,
+    workflowTimeout,
+    progressToken,
+    progressCallback,
+  }: {
+    linkedapi: LinkedApi;
+    args: never;
+    workflowTimeout: number;
+    progressToken?: string | number;
+    progressCallback: (progress: LinkedApiProgressNotification) => void;
+  }): Promise<TMappedResponse<unknown>>;
+}
+
 export class LinkedApiTools {
-  public readonly tools: ReadonlyArray<LinkedApiTool<unknown, unknown>>;
+  public readonly tools: ReadonlyArray<TRegisteredLinkedApiTool>;
   public readonly adminTools: ReadonlyArray<AdminTool<unknown, unknown>>;
 
-  constructor(progressCallback: (progress: LinkedApiProgressNotification) => void) {
+  constructor() {
     this.tools = [
       // Standard tools
-      new SendMessageTool(progressCallback),
-      new GetConversationTool(progressCallback),
-      new CheckConnectionStatusTool(progressCallback),
-      new RetrieveConnectionsTool(progressCallback),
-      new SendConnectionRequestTool(progressCallback),
-      new WithdrawConnectionRequestTool(progressCallback),
-      new RetrievePendingRequestsTool(progressCallback),
-      new RemoveConnectionTool(progressCallback),
-      new SearchCompaniesTool(progressCallback),
-      new SearchPeopleTool(progressCallback),
-      new FetchCompanyTool(progressCallback),
-      new FetchPersonTool(progressCallback),
-      new FetchPostTool(progressCallback),
-      new ReactToPostTool(progressCallback),
-      new CommentOnPostTool(progressCallback),
-      new CreatePostTool(progressCallback),
-      new RetrieveSSITool(progressCallback),
-      new RetrievePerformanceTool(progressCallback),
+      new SendMessageTool(),
+      new GetConversationTool(),
+      new CheckConnectionStatusTool(),
+      new RetrieveConnectionsTool(),
+      new SendConnectionRequestTool(),
+      new WithdrawConnectionRequestTool(),
+      new RetrievePendingRequestsTool(),
+      new RemoveConnectionTool(),
+      new SearchCompaniesTool(),
+      new SearchPeopleTool(),
+      new FetchCompanyTool(),
+      new FetchPersonTool(),
+      new FetchPostTool(),
+      new ReactToPostTool(),
+      new CommentOnPostTool(),
+      new CreatePostTool(),
+      new RetrieveSSITool(),
+      new RetrievePerformanceTool(),
       // Sales Navigator tools
-      new NvSendMessageTool(progressCallback),
-      new NvGetConversationTool(progressCallback),
-      new NvSearchCompaniesTool(progressCallback),
-      new NvSearchPeopleTool(progressCallback),
-      new NvFetchCompanyTool(progressCallback),
-      new NvFetchPersonTool(progressCallback),
+      new NvSendMessageTool(),
+      new NvGetConversationTool(),
+      new NvSearchCompaniesTool(),
+      new NvSearchPeopleTool(),
+      new NvFetchCompanyTool(),
+      new NvFetchPersonTool(),
       // Other tools
-      new ExecuteCustomWorkflowTool(progressCallback),
-      new GetWorkflowResultTool(progressCallback),
-      new GetApiUsageTool(progressCallback),
+      new ExecuteCustomWorkflowTool(),
+      new GetWorkflowResultTool(),
+      new GetApiUsageTool(),
     ];
 
     this.adminTools = [
@@ -91,7 +112,7 @@ export class LinkedApiTools {
     ];
   }
 
-  public toolByName(name: string): LinkedApiTool<unknown, unknown> | undefined {
+  public toolByName(name: string): TRegisteredLinkedApiTool | undefined {
     return this.tools.find((tool) => tool.name === name);
   }
 

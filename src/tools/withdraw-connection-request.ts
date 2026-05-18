@@ -19,7 +19,7 @@ export class WithdrawConnectionRequestTool extends OperationTool<
     return {
       name: this.name,
       description:
-        'Allows you to withdraw the connection request sent to a person (st.withdrawConnectionRequest action).',
+        'Allows you to withdraw the connection request sent to a person (st.withdrawConnectionRequest action). If this workflow is still running, do not retry this tool; retrying can queue duplicate withdrawal attempts for the same person.',
       inputSchema: {
         type: 'object',
         properties: {

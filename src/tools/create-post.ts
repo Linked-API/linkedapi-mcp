@@ -26,7 +26,7 @@ export class CreatePostTool extends OperationTool<TCreatePostParams, unknown> {
     return {
       name: this.name,
       description:
-        'Creates a new LinkedIn post with optional media attachments (st.createPost action).',
+        'Creates a new LinkedIn post with optional media attachments (st.createPost action). If this workflow is still running, do not retry this tool; retrying can create duplicate posts.',
       inputSchema: {
         type: 'object',
         properties: {

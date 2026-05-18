@@ -15,7 +15,7 @@ export class RemoveConnectionTool extends OperationTool<TRemoveConnectionParams,
     return {
       name: this.name,
       description:
-        'Allows you to remove a person from your connections (st.removeConnection action).',
+        'Allows you to remove a person from your connections (st.removeConnection action). If this workflow is still running, do not retry this tool; retrying can queue duplicate removal attempts for the same person.',
       inputSchema: {
         type: 'object',
         properties: {
