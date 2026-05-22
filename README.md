@@ -19,7 +19,7 @@ To start using Linked API MCP, spend 2 minutes reading these essential guides:
 
 Linked API actions run through a cloud browser and are queued like normal automation. Many actions take several minutes, especially searches and profile fetches with optional data.
 
-If a tool returns `workflowId` and `operationName`, the action is still running. Do not retry the original tool because that can queue duplicate work. Call `get_workflow_result` with the exact `workflowId` and `operationName` until the final result is returned.
+If a tool returns `status`, `workflowId`, `operationName`, and `message`, the action is still running. Do not retry the original tool because that can queue duplicate work. Call `get_workflow_result` with the exact `workflowId` and `operationName` until the final result is returned. By default `get_workflow_result` long-polls until the workflow completes or the current MCP client's request budget elapses; pass `waitSeconds: 0` for an immediate single-shot snapshot.
 
 ## License
 

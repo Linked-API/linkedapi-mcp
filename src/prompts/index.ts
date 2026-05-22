@@ -33,7 +33,7 @@ LINKEDIN WORKFLOWS RUN IN THE BACKGROUND:
 - Simply continue listening for updates using get_workflow_result
 
 WHEN A WORKFLOW IS RUNNING IN BACKGROUND:
-1. You'll receive a status message with: workflowId and operationName
+1. You'll receive a status message with: workflowId, status, message, and operationName
 2. Use get_workflow_result(workflowId, operationName) to continue listening for updates
 3. Keep listening until you get the final results
 4. This is normal workflow operation - the task is actively running
@@ -41,6 +41,7 @@ WHEN A WORKFLOW IS RUNNING IN BACKGROUND:
 EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {
   "message": "Workflow is running in the background. Continue listening for updates.",
+  "status": "running",
   "workflowId": "account-12345-abcde",
   "operationName": "searchCompanies"
 }
@@ -113,6 +114,7 @@ WHAT TO DO WHEN WORKFLOW RUNS IN BACKGROUND:
 EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {
   "message": "Workflow is running in the background. Continue listening for updates.",
+  "status": "running",
   "workflowId": "account-12345-abcde", 
   "operationName": "searchCompanies"
 }

@@ -13,7 +13,6 @@ import { LinkedApiMCPServer } from './linked-api-server';
 import { availablePrompts, getPromptContent, systemPrompt } from './prompts';
 import { JsonHTTPServerTransport } from './utils/json-http-transport';
 import { logger } from './utils/logger';
-import { LinkedApiProgressNotification } from './utils/types';
 
 function deriveClientFromUserAgent(userAgent: string): string {
   const ua = userAgent.toLowerCase();
@@ -139,38 +138,10 @@ async function main() {
           mcpClient = deriveClientFromUserAgent(userAgentHeader);
         }
       }
-      const progressCallback = (notification: LinkedApiProgressNotification): void => {
-        const { progressToken, progress, total, message } = notification;
-        if (progressToken === undefined) {
-          return;
-        }
-
-        void extra
-          .sendNotification({
-            method: 'notifications/progress',
-            params: {
-              progressToken,
-              progress,
-              total,
-              message,
-            },
-          })
-          .catch((error: unknown) => {
-            logger.warn(
-              {
-                toolName: request.params.name,
-                error: error instanceof Error ? error.message : String(error),
-              },
-              'Failed to send MCP progress notification',
-            );
-          });
-      };
-
       const result = await linkedApiServer.executeWithTokens(request.params, {
         linkedApiToken,
         identificationToken,
         mcpClient,
-        progressCallback,
       });
       return result;
     } catch (error) {

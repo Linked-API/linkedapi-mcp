@@ -3,23 +3,16 @@ import { buildLinkedApiHttpClient } from '@linkedapi/node/dist/core';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 import { LinkedApiTools } from './linked-api-tools';
-import { defineRequestTimeoutInSeconds } from './utils/define-request-timeout';
 import { handleLinkedApiError } from './utils/handle-linked-api-error';
 import { logger } from './utils/logger';
-import {
-  CallToolResult,
-  ExtendedCallToolRequest,
-  LinkedApiProgressNotification,
-} from './utils/types';
+import { CallToolResult, ExtendedCallToolRequest } from './utils/types';
 
 const BACKGROUND_WORKFLOW_DESCRIPTION =
-  `Linked API actions are queued into a cloud-browser workflow and may take several minutes. This is normal LinkedIn automation behavior, not a failed request. If the response contains workflowId and operationName, do not retry this tool; call get_workflow_result with those exact values until the final result is returned.` as const;
+  `Linked API actions are queued into a cloud-browser workflow and may take several minutes. The server returns immediately after starting the workflow with {status: 'pending'|'running', workflowId, operationName, message}. To retrieve the final result, call get_workflow_result with the returned workflowId and operationName — it will long-poll until completion or the request budget elapses, then return either the final result or another in-progress snapshot. Do not retry the original tool while a workflow is still running; that creates duplicate queued work.` as const;
 const NON_WORKFLOW_TOOL_NAMES = new Set<string>(['get_workflow_result', 'get_api_usage'] as const);
-const NOOP_PROGRESS_CALLBACK = (_notification: LinkedApiProgressNotification): void => {};
 
 interface TExecuteWithTokensOptions extends TLinkedApiConfig {
   mcpClient: string;
-  progressCallback?: (notification: LinkedApiProgressNotification) => void;
 }
 
 export class LinkedApiMCPServer {
@@ -47,25 +40,17 @@ export class LinkedApiMCPServer {
 
   public async executeWithTokens(
     request: ExtendedCallToolRequest['params'],
-    {
-      linkedApiToken,
-      identificationToken,
-      mcpClient,
-      progressCallback = NOOP_PROGRESS_CALLBACK,
-    }: TExecuteWithTokensOptions,
+    { linkedApiToken, identificationToken, mcpClient }: TExecuteWithTokensOptions,
   ): Promise<CallToolResult> {
-    const workflowTimeout = defineRequestTimeoutInSeconds(mcpClient) * 1000;
     logger.info(
       {
         toolName: request.name,
         arguments: request.arguments,
         mcpClient,
-        workflowTimeout,
       },
       'Tool execution started',
     );
-    const { name: toolName, arguments: args, _meta } = request;
-    const progressToken = _meta?.progressToken;
+    const { name: toolName, arguments: args } = request;
 
     const startTime = Date.now();
     try {
@@ -90,23 +75,9 @@ export class LinkedApiMCPServer {
           'Tool execution successful',
         );
         if (result === undefined) {
-          return {
-            content: [
-              {
-                type: 'text' as const,
-                text: 'Completed',
-              },
-            ],
-          };
+          return this.text('Completed');
         }
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
+        return this.text(JSON.stringify(result, null, 2));
       }
 
       const linkedapi = new LinkedApi(
@@ -124,15 +95,32 @@ export class LinkedApiMCPServer {
         throw new Error(`Unknown tool: ${toolName}`);
       }
       const params = tool.validate(args);
-      const { data, errors } = await tool.execute({
+      const result = await tool.execute({
         linkedapi,
         args: params as never,
-        workflowTimeout,
-        progressToken,
-        progressCallback,
+        mcpClient,
       });
-      const endTime = Date.now();
-      const duration = `${((endTime - startTime) / 1000).toFixed(2)} seconds`;
+      const duration = this.calculateDuration(startTime);
+
+      if ('workflowStatus' in result) {
+        const inProgressBody = {
+          status: result.workflowStatus,
+          workflowId: result.workflowId,
+          operationName: result.operationName,
+          message: result.message,
+        };
+        logger.info(
+          {
+            toolName,
+            duration,
+            body: inProgressBody,
+          },
+          'Tool execution returned in-progress snapshot',
+        );
+        return this.text(JSON.stringify(inProgressBody, null, 2));
+      }
+
+      const { data, errors } = result;
       if (errors.length > 0 && !data) {
         logger.error(
           {
@@ -161,23 +149,9 @@ export class LinkedApiMCPServer {
         'Tool execution successful',
       );
       if (data) {
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: JSON.stringify(data, null, 2),
-            },
-          ],
-        };
+        return this.text(JSON.stringify(data, null, 2));
       }
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: 'Completed',
-          },
-        ],
-      };
+      return this.text('Completed');
     } catch (error) {
       const duration = this.calculateDuration(startTime);
       if (error instanceof LinkedApiError) {
@@ -198,7 +172,7 @@ export class LinkedApiMCPServer {
             },
           ],
           structuredContent: body,
-          isError: error.type !== 'workflowTimeout',
+          isError: true,
         };
       }
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -212,15 +186,19 @@ export class LinkedApiMCPServer {
         'Tool execution failed with unknown error',
       );
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: `Error executing ${toolName}: ${errorMessage}`,
-          },
-        ],
-      };
+      return this.text(`Error executing ${toolName}: ${errorMessage}`);
     }
+  }
+
+  private text(text: string): CallToolResult {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text,
+        },
+      ],
+    };
   }
 
   private calculateDuration(startTime: number): string {

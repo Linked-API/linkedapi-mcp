@@ -1,14 +1,13 @@
 import LinkedApi, {
-  LinkedApiWorkflowTimeoutError,
+  OPERATION_NAME,
   TConversationPollResult,
   TMappedResponse,
 } from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import z from 'zod';
 
-import { executeWithProgress } from '../utils/execute-with-progress.js';
+import type { TWorkflowAck } from '../types/linked-api-tool-result.type.js';
 import { LinkedApiTool } from '../utils/linked-api-tool.js';
-import { LinkedApiProgressNotification } from '../utils/types.js';
 
 export class NvGetConversationTool extends LinkedApiTool<
   { personUrl: string; since?: string },
@@ -23,40 +22,20 @@ export class NvGetConversationTool extends LinkedApiTool<
   public override async execute({
     linkedapi,
     args: { personUrl, since },
-    workflowTimeout,
-    progressToken,
-    progressCallback,
   }: {
     linkedapi: LinkedApi;
     args: { personUrl: string; since?: string };
-    workflowTimeout: number;
-    progressToken?: string | number;
-    progressCallback: (progress: LinkedApiProgressNotification) => void;
-  }): Promise<TMappedResponse<TConversationPollResult>> {
-    const conversations = await this.getConversation(linkedapi, personUrl, since);
+  }): Promise<TMappedResponse<TConversationPollResult> | TWorkflowAck> {
+    const conversations = await this.pollConversation(linkedapi, personUrl, since);
     if (conversations.errors.length === 0) {
       return conversations;
     }
-    try {
-      await executeWithProgress({
-        progressCallback,
-        operation: linkedapi.nvSyncConversation,
-        workflowTimeout,
-        params: { personUrl },
-        progressToken,
-      });
-    } catch (error) {
-      if (error instanceof LinkedApiWorkflowTimeoutError) {
-        error.message = `${error.message}
-
-After get_workflow_result completes this sync workflow, call nv_get_conversation again with the same personUrl to read the synchronized messages.`;
-      }
-      throw error;
-    }
-    return await this.getConversation(linkedapi, personUrl, since);
+    const ack = await linkedapi.nvSyncConversation.execute({ personUrl });
+    return { ...ack,
+operationName: OPERATION_NAME.nvSyncConversation };
   }
 
-  private async getConversation(
+  private async pollConversation(
     linkedapi: LinkedApi,
     personUrl: string,
     since?: string,
@@ -78,7 +57,7 @@ After get_workflow_result completes this sync workflow, call nv_get_conversation
     return {
       name: this.name,
       description:
-        'Allows you to get a conversation with a LinkedIn person using Sales Navigator messaging.',
+        'Retrieve a conversation with a LinkedIn person via Sales Navigator messaging. Returns the conversation immediately if it has already been synced. If the conversation has not been synced yet, this tool starts an nvSyncConversation workflow and returns its ack ({status, workflowId, operationName: "nvSyncConversation", message}); the client should call get_workflow_result with that workflowId until completion, then call nv_get_conversation again to read the synced messages.',
       inputSchema: {
         type: 'object',
         properties: {

@@ -1,4 +1,4 @@
-import LinkedApi, { TMappedResponse } from '@linkedapi/node';
+import LinkedApi from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 import { AdminConnectAccountTool } from './tools/admin-connect-account.js';
@@ -38,26 +38,18 @@ import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
+import type { TLinkedApiToolResult } from './types/linked-api-tool-result.type.js';
 import { AdminTool } from './utils/admin-tool.js';
-import { LinkedApiProgressNotification } from './utils/types.js';
 
 interface TRegisteredLinkedApiTool {
   readonly name: string;
   getTool(): Tool;
   validate(args: unknown): unknown;
-  execute({
-    linkedapi,
-    args,
-    workflowTimeout,
-    progressToken,
-    progressCallback,
-  }: {
+  execute(options: {
     linkedapi: LinkedApi;
     args: never;
-    workflowTimeout: number;
-    progressToken?: string | number;
-    progressCallback: (progress: LinkedApiProgressNotification) => void;
-  }): Promise<TMappedResponse<unknown>>;
+    mcpClient: string;
+  }): Promise<TLinkedApiToolResult<unknown>>;
 }
 
 export class LinkedApiTools {

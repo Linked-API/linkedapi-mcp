@@ -9,9 +9,3 @@ export interface ExtendedCallToolRequest extends CallToolRequest {
     };
   };
 }
-export interface LinkedApiProgressNotification {
-  progressToken?: string | number;
-  progress: number;
-  total?: number;
-  message?: string;
-}

@@ -1,16 +1,13 @@
-import LinkedApi, { Operation, TMappedResponse, TOperationName } from '@linkedapi/node';
+import LinkedApi, { Operation, TOperationName } from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { LinkedApiProgressNotification } from 'src/utils/types';
 import z from 'zod';
 
-import { executeWithProgress } from './execute-with-progress';
+import type { TLinkedApiToolResult, TWorkflowAck } from '../types/linked-api-tool-result.type.js';
 
 interface TLinkedApiToolExecuteOptions<TParams> {
   linkedapi: LinkedApi;
   args: TParams;
-  workflowTimeout: number;
-  progressToken?: string | number;
-  progressCallback: (progress: LinkedApiProgressNotification) => void;
+  mcpClient: string;
 }
 
 export abstract class LinkedApiTool<TParams, TResult> {
@@ -23,34 +20,23 @@ export abstract class LinkedApiTool<TParams, TResult> {
     return this.schema.parse(args) as TParams;
   }
 
-  public abstract execute({
-    linkedapi,
-    args,
-    workflowTimeout,
-    progressToken,
-    progressCallback,
-  }: TLinkedApiToolExecuteOptions<TParams>): Promise<TMappedResponse<TResult>>;
+  public abstract execute(
+    options: TLinkedApiToolExecuteOptions<TParams>,
+  ): Promise<TLinkedApiToolResult<TResult>>;
 }
 
 export abstract class OperationTool<TParams, TResult> extends LinkedApiTool<TParams, TResult> {
   public abstract readonly operationName: TOperationName;
 
-  public override execute({
+  public override async execute({
     linkedapi,
     args,
-    workflowTimeout,
-    progressToken,
-    progressCallback,
-  }: TLinkedApiToolExecuteOptions<TParams>): Promise<TMappedResponse<TResult>> {
+  }: TLinkedApiToolExecuteOptions<TParams>): Promise<TWorkflowAck> {
     const operation = linkedapi.operations.find(
       (operation) => operation.operationName === this.operationName,
     )! as Operation<TParams, TResult>;
-    return executeWithProgress({
-      progressCallback,
-      operation,
-      workflowTimeout,
-      params: args,
-      progressToken,
-    });
+    const response = await operation.execute(args);
+    return { ...response,
+operationName: this.operationName };
   }
 }

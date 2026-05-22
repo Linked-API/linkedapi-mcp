@@ -17,8 +17,6 @@ export class GetApiUsageTool extends LinkedApiTool<TApiUsageParams, TApiUsageAct
   }: {
     linkedapi: LinkedApi;
     args: TApiUsageParams;
-    workflowTimeout: number;
-    progressToken?: string | number;
   }): Promise<TMappedResponse<TApiUsageAction[]>> {
     return await linkedapi.getApiUsage(args);
   }
