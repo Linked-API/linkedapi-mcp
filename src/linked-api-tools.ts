@@ -2,19 +2,16 @@ import LinkedApi from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 import { AdminCancelConnectionSessionTool } from './tools/admin-cancel-connection-session.js';
-import { AdminCancelSubscriptionTool } from './tools/admin-cancel-subscription.js';
 import { AdminConnectAccountTool } from './tools/admin-connect-account.js';
 import { AdminCreateReconnectionSessionTool } from './tools/admin-create-reconnection-session.js';
 import { AdminDeleteLimitsTool } from './tools/admin-delete-limits.js';
 import { AdminDisconnectAccountTool } from './tools/admin-disconnect-account.js';
 import { AdminGetAccountsTool } from './tools/admin-get-accounts.js';
-import { AdminGetBillingLinkTool } from './tools/admin-get-billing-link.js';
 import { AdminGetConnectionSessionTool } from './tools/admin-get-connection-session.js';
 import { AdminGetLimitsDefaultsTool } from './tools/admin-get-limits-defaults.js';
 import { AdminGetLimitsUsageTool } from './tools/admin-get-limits-usage.js';
 import { AdminGetLimitsTool } from './tools/admin-get-limits.js';
 import { AdminGetSeatsTool } from './tools/admin-get-seats.js';
-import { AdminGetSubscriptionPricingTool } from './tools/admin-get-subscription-pricing.js';
 import { AdminGetSubscriptionStatusTool } from './tools/admin-get-subscription-status.js';
 import { AdminRegenerateTokenTool } from './tools/admin-regenerate-token.js';
 import { AdminReparseAccountInfoTool } from './tools/admin-reparse-account-info.js';
@@ -108,9 +105,6 @@ export class LinkedApiTools {
       new AdminGetSubscriptionStatusTool(),
       new AdminGetSeatsTool(),
       new AdminSetSeatsTool(),
-      new AdminGetSubscriptionPricingTool(),
-      new AdminGetBillingLinkTool(),
-      new AdminCancelSubscriptionTool(),
       new AdminGetAccountsTool(),
       new AdminReparseAccountInfoTool(),
       new AdminCreateReconnectionSessionTool(),
