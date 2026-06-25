@@ -1,6 +1,6 @@
 {
   "name": "@linkedapi/mcp",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "MCP server that lets AI assistants control LinkedIn accounts and retrieve real-time data.",
   "main": "dist/index.js",
   "bin": {
@@ -17,7 +17,7 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write --log-level warn \"src/**/*.ts\"",
     "prepublishOnly": "npm run clean && npm run build",
     "prepare": "husky"
   },
