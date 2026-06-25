@@ -16,6 +16,7 @@ import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { CreatePostTool } from './tools/create-post.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
 import { FetchCompanyTool } from './tools/fetch-company.js';
+import { FetchJobTool } from './tools/fetch-job.js';
 import { FetchPersonTool } from './tools/fetch-person.js';
 import { FetchPostTool } from './tools/fetch-post.js';
 import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
@@ -34,6 +35,7 @@ import { RetrievePendingRequestsTool } from './tools/retrieve-pending-requests.j
 import { RetrievePerformanceTool } from './tools/retrieve-performance.js';
 import { RetrieveSSITool } from './tools/retrieve-ssi.js';
 import { SearchCompaniesTool } from './tools/search-companies.js';
+import { SearchJobsTool } from './tools/search-jobs.js';
 import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
@@ -69,9 +71,11 @@ export class LinkedApiTools {
       new RemoveConnectionTool(),
       new SearchCompaniesTool(),
       new SearchPeopleTool(),
+      new SearchJobsTool(),
       new FetchCompanyTool(),
       new FetchPersonTool(),
       new FetchPostTool(),
+      new FetchJobTool(),
       new ReactToPostTool(),
       new CommentOnPostTool(),
       new CreatePostTool(),
