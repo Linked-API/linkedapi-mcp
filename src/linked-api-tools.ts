@@ -28,6 +28,7 @@ import { FetchPersonTool } from './tools/fetch-person.js';
 import { FetchPostTool } from './tools/fetch-post.js';
 import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
 import { GetConversationTool } from './tools/get-conversation.js';
+import { GetInboxTool } from './tools/get-inbox.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
 import { NvFetchCompanyTool } from './tools/nv-fetch-company.js';
 import { NvFetchPersonTool } from './tools/nv-fetch-person.js';
@@ -35,6 +36,7 @@ import { NvGetConversationTool } from './tools/nv-get-conversation.js';
 import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
+import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
 import { RetrieveConnectionsTool } from './tools/retrieve-connections.js';
@@ -46,6 +48,7 @@ import { SearchJobsTool } from './tools/search-jobs.js';
 import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
+import { SyncInboxTool } from './tools/sync-inbox.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
 import type { TLinkedApiToolResult } from './types/linked-api-tool-result.type.js';
 import { AdminTool } from './utils/admin-tool.js';
@@ -70,6 +73,8 @@ export class LinkedApiTools {
       // Standard tools
       new SendMessageTool(),
       new GetConversationTool(),
+      new SyncInboxTool(),
+      new GetInboxTool(),
       new CheckConnectionStatusTool(),
       new RetrieveConnectionsTool(),
       new SendConnectionRequestTool(),
@@ -91,6 +96,7 @@ export class LinkedApiTools {
       // Sales Navigator tools
       new NvSendMessageTool(),
       new NvGetConversationTool(),
+      new NvSyncInboxTool(),
       new NvSearchCompaniesTool(),
       new NvSearchPeopleTool(),
       new NvFetchCompanyTool(),
