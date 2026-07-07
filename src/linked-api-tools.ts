@@ -30,9 +30,11 @@ import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
 import { GetConversationTool } from './tools/get-conversation.js';
 import { GetInboxTool } from './tools/get-inbox.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
+import { ManageConversationTool } from './tools/manage-conversation.js';
 import { NvFetchCompanyTool } from './tools/nv-fetch-company.js';
 import { NvFetchPersonTool } from './tools/nv-fetch-person.js';
 import { NvGetConversationTool } from './tools/nv-get-conversation.js';
+import { NvManageConversationTool } from './tools/nv-manage-conversation.js';
 import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
@@ -75,6 +77,7 @@ export class LinkedApiTools {
       new GetConversationTool(),
       new SyncInboxTool(),
       new GetInboxTool(),
+      new ManageConversationTool(),
       new CheckConnectionStatusTool(),
       new RetrieveConnectionsTool(),
       new SendConnectionRequestTool(),
@@ -97,6 +100,7 @@ export class LinkedApiTools {
       new NvSendMessageTool(),
       new NvGetConversationTool(),
       new NvSyncInboxTool(),
+      new NvManageConversationTool(),
       new NvSearchCompaniesTool(),
       new NvSearchPeopleTool(),
       new NvFetchCompanyTool(),
