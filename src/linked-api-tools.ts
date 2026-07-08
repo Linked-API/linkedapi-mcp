@@ -1,6 +1,7 @@
 import LinkedApi from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
+import { AcceptConnectionRequestTool } from './tools/accept-connection-request.js';
 import { AdminCancelConnectionSessionTool } from './tools/admin-cancel-connection-session.js';
 import { AdminConnectAccountTool } from './tools/admin-connect-account.js';
 import { AdminCreateReconnectionSessionTool } from './tools/admin-create-reconnection-session.js';
@@ -30,6 +31,7 @@ import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
 import { GetConversationTool } from './tools/get-conversation.js';
 import { GetInboxTool } from './tools/get-inbox.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
+import { IgnoreConnectionRequestTool } from './tools/ignore-connection-request.js';
 import { ManageConversationTool } from './tools/manage-conversation.js';
 import { NvFetchCompanyTool } from './tools/nv-fetch-company.js';
 import { NvFetchPersonTool } from './tools/nv-fetch-person.js';
@@ -41,6 +43,7 @@ import { NvSendMessageTool } from './tools/nv-send-message.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
+import { RetrieveConnectionRequestsTool } from './tools/retrieve-connection-requests.js';
 import { RetrieveConnectionsTool } from './tools/retrieve-connections.js';
 import { RetrievePendingRequestsTool } from './tools/retrieve-pending-requests.js';
 import { RetrievePerformanceTool } from './tools/retrieve-performance.js';
@@ -83,6 +86,9 @@ export class LinkedApiTools {
       new SendConnectionRequestTool(),
       new WithdrawConnectionRequestTool(),
       new RetrievePendingRequestsTool(),
+      new RetrieveConnectionRequestsTool(),
+      new AcceptConnectionRequestTool(),
+      new IgnoreConnectionRequestTool(),
       new RemoveConnectionTool(),
       new SearchCompaniesTool(),
       new SearchPeopleTool(),

@@ -30,7 +30,7 @@
   "author": "Linked API",
   "license": "MIT",
   "dependencies": {
-    "@linkedapi/node": "^2.1.3",
+    "@linkedapi/node": "^2.2.0",
     "@modelcontextprotocol/sdk": "^1.17.4",
     "zod": "^4.1.1"
   },
