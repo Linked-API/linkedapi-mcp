@@ -30,6 +30,7 @@ import { FetchPostTool } from './tools/fetch-post.js';
 import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
 import { GetConversationTool } from './tools/get-conversation.js';
 import { GetInboxTool } from './tools/get-inbox.js';
+import { GetNetworkTool } from './tools/get-network.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
 import { IgnoreConnectionRequestTool } from './tools/ignore-connection-request.js';
 import { ManageConversationTool } from './tools/manage-conversation.js';
@@ -54,6 +55,7 @@ import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendMessageTool } from './tools/send-message.js';
 import { SyncInboxTool } from './tools/sync-inbox.js';
+import { SyncNetworkTool } from './tools/sync-network.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
 import type { TLinkedApiToolResult } from './types/linked-api-tool-result.type.js';
 import { AdminTool } from './utils/admin-tool.js';
@@ -80,6 +82,8 @@ export class LinkedApiTools {
       new GetConversationTool(),
       new SyncInboxTool(),
       new GetInboxTool(),
+      new SyncNetworkTool(),
+      new GetNetworkTool(),
       new ManageConversationTool(),
       new CheckConnectionStatusTool(),
       new RetrieveConnectionsTool(),
