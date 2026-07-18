@@ -4,16 +4,16 @@ import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
 
-export class RetrieveConnectionRequestsTool extends OperationTool<unknown, unknown> {
-  public override readonly name = 'retrieve_connection_requests';
-  public override readonly operationName = OPERATION_NAME.retrieveConnectionRequests;
+export class RetrieveInvitationsTool extends OperationTool<unknown, unknown> {
+  public override readonly name = 'retrieve_invitations';
+  public override readonly operationName = OPERATION_NAME.retrieveInvitations;
   protected override readonly schema = z.object({});
 
   public override getTool(): Tool {
     return {
       name: this.name,
       description:
-        'Allows you to retrieve incoming connection requests received by your account. (st.retrieveConnectionRequests action).',
+        'Retrieves incoming connection, company-follow, and newsletter-subscription invitations received by your account (st.retrieveInvitations action).',
       inputSchema: {
         type: 'object',
         properties: {},
