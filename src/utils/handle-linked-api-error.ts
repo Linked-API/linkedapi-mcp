@@ -11,6 +11,12 @@ export function handleLinkedApiError(error: LinkedApiError): Record<string, unkn
       return {
         message: authenticationPrompt,
       };
+    case 'trialLimitReached':
+      return {
+        message: error.message,
+        type: error.type,
+        retryable: false,
+      };
   }
   return {
     message: error.message,
