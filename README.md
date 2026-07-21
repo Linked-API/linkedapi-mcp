@@ -21,10 +21,6 @@ Linked API actions run through a cloud browser and are queued like normal automa
 
 If a tool returns `status`, `workflowId`, `operationName`, and `message`, the action is still running. Do not retry the original tool because that can queue duplicate work. Call `get_workflow_result` with the exact `workflowId` and `operationName` until the final result is returned. By default `get_workflow_result` long-polls until the workflow completes or the current MCP client's request budget elapses; pass `waitSeconds: 0` for an immediate single-shot snapshot.
 
-If a tool returns `type: "trialLimitReached"` and `retryable: false`, the workspace has used its
-free trial workflow allowance. Do not retry the tool; ask the user to subscribe or contact support
-for a trial extension.
-
 ## License
 
 This project is licensed under the MIT – see the [LICENSE](https://github.com/Linked-API/linkedapi-mcp/blob/main/LICENSE) file for details.
