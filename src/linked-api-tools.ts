@@ -45,6 +45,7 @@ import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
 import { RetrieveConnectionsTool } from './tools/retrieve-connections.js';
+import { RetrieveFeedTool } from './tools/retrieve-feed.js';
 import { RetrieveInvitationsTool } from './tools/retrieve-invitations.js';
 import { RetrievePendingRequestsTool } from './tools/retrieve-pending-requests.js';
 import { RetrievePerformanceTool } from './tools/retrieve-performance.js';
@@ -104,6 +105,7 @@ export class LinkedApiTools {
       new ReactToPostTool(),
       new CommentOnPostTool(),
       new CreatePostTool(),
+      new RetrieveFeedTool(),
       new RetrieveSSITool(),
       new RetrievePerformanceTool(),
       // Sales Navigator tools
