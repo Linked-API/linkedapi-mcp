@@ -1,10 +1,10 @@
-import { OPERATION_NAME, TCommentOnPostParams } from '@linkedapi/node';
+import { OPERATION_NAME, TCommentOnPostParams, TCommentOnPostResult } from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 
 import { OperationTool } from '../utils/linked-api-tool.js';
 
-export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unknown> {
+export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, TCommentOnPostResult> {
   public override readonly name = 'comment_on_post';
   public override readonly operationName = OPERATION_NAME.commentOnPost;
   protected override readonly schema = z.object({
@@ -17,7 +17,7 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, unkno
     return {
       name: this.name,
       description:
-        'Allows you to leave a comment on a post (st.commentOnPost action). If this workflow is still running, do not retry this tool; retrying can post duplicate comments.',
+        "Allows you to leave a comment on a post (st.commentOnPost action); returns the comment's URN and URL. If this workflow is still running, do not retry this tool; retrying can post duplicate comments.",
       inputSchema: {
         type: 'object',
         properties: {
