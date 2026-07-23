@@ -42,8 +42,10 @@ import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
+import { ReactToCommentTool } from './tools/react-to-comment.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
+import { ReplyToCommentTool } from './tools/reply-to-comment.js';
 import { RetrieveConnectionsTool } from './tools/retrieve-connections.js';
 import { RetrieveFeedTool } from './tools/retrieve-feed.js';
 import { RetrieveInvitationsTool } from './tools/retrieve-invitations.js';
@@ -104,6 +106,8 @@ export class LinkedApiTools {
       new FetchJobTool(),
       new ReactToPostTool(),
       new CommentOnPostTool(),
+      new ReactToCommentTool(),
+      new ReplyToCommentTool(),
       new CreatePostTool(),
       new RetrieveFeedTool(),
       new RetrieveSSITool(),
