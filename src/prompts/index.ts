@@ -33,10 +33,30 @@ LINKEDIN WORKFLOWS RUN IN THE BACKGROUND:
 - Simply continue listening for updates using get_workflow_result
 
 WHEN A WORKFLOW IS RUNNING IN BACKGROUND:
-1. You'll receive a status message with: workflowId, status, message, and operationName
+1. You'll receive a status message with: workflowId, status, pendingReason, message, and operationName
 2. Use get_workflow_result(workflowId, operationName) to continue listening for updates
 3. Keep listening until you get the final results
 4. This is normal workflow operation - the task is actively running
+
+WHEN A WORKFLOW IS PARKED OUTSIDE WORKING HOURS:
+- pendingReason is "outsideWorkingHours": the account has configured working hours and this
+  workflow will not start until they reopen, which may be the next working day
+- get_workflow_result returns immediately in this case instead of polling
+- Do NOT keep calling get_workflow_result in a loop and do NOT restart the workflow
+- Tell the user when the window opens (the message says so) and that the work will start by itself
+
+EXAMPLE PARKED WORKFLOW MESSAGE:
+{
+  "status": "pending",
+  "pendingReason": "outsideWorkingHours",
+  "message": "This workflow is scheduled and will start when the account working hours open at Mon, Aug 10, 09:00 (Europe/Berlin).",
+  "workflowId": "account-12345-abcde",
+  "operationName": "searchCompanies"
+}
+
+RESPONSE: "This account is outside its working hours right now, so the search is queued and will
+start automatically on Monday at 09:00 (Europe/Berlin). Nothing else is needed from you."
+
 
 EXAMPLE BACKGROUND WORKFLOW MESSAGE:
 {

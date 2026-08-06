@@ -1,4 +1,5 @@
 import LinkedApi, {
+  LINKED_API_WORKFLOW_PENDING_REASON,
   Operation,
   OPERATION_NAME,
   TMappedResponse,
@@ -55,6 +56,11 @@ export class GetWorkflowResultTool extends LinkedApiTool<IGetWorkflowResultParam
       if (!isWorkflowInProgress(status)) {
         return status;
       }
+      if (status.pendingReason === LINKED_API_WORKFLOW_PENDING_REASON.outsideWorkingHours) {
+        return { ...status,
+workflowId,
+operationName: typedOperationName };
+      }
       const remainingMs = deadline - Date.now();
       if (remainingMs <= 0) {
         return { ...status,
@@ -69,7 +75,7 @@ operationName: typedOperationName };
     return {
       name: this.name,
       description:
-        'Check the current state of a previously started Linked API workflow. Returns the final result when the workflow has completed, otherwise returns the current in-progress snapshot ({status, workflowId, operationName, message}). The server long-polls up to waitSeconds while the workflow is still running; if the budget elapses without completion, the in-progress snapshot is returned and the client should call this tool again with the same workflowId and operationName.',
+        'Check the current state of a previously started Linked API workflow. Returns the final result when the workflow has completed, otherwise returns the current in-progress snapshot ({status, pendingReason, workflowId, operationName, message}). The server long-polls up to waitSeconds while the workflow is still running; if the budget elapses without completion, the in-progress snapshot is returned and the client should call this tool again with the same workflowId and operationName. Exception: when pendingReason is "outsideWorkingHours" the workflow is parked until the account working hours reopen — the server returns immediately without polling, message states when that is, and calling this tool again before then will report the same state.',
       inputSchema: {
         type: 'object',
         properties: {
