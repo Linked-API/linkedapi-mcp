@@ -9,6 +9,7 @@ export class SyncConversationTool extends OperationTool<TSyncConversationParams,
   public override readonly operationName = OPERATION_NAME.syncConversation;
   protected override readonly schema = z.object({
     personUrl: z.string(),
+    days: z.number().int().min(1).max(90).optional(),
   });
 
   public override getTool(): Tool {
@@ -23,6 +24,11 @@ export class SyncConversationTool extends OperationTool<TSyncConversationParams,
             type: 'string',
             description:
               "The LinkedIn URL of the person whose conversation you want to synchronize (e.g., 'https://www.linkedin.com/in/john-doe')",
+          },
+          days: {
+            type: 'number',
+            description:
+              'How many days the conversation stays synchronized, from 1 to 90. Defaults to 30. Counted from the moment the action starts running; a reply does not extend it. Syncing the same person again starts a new period and keeps the history already collected.',
           },
         },
         required: ['personUrl'],
