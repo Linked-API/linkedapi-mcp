@@ -15,7 +15,7 @@ export class RetrieveFeedTool extends OperationTool<TRetrieveFeedParams, Array<T
     return {
       name: this.name,
       description:
-        "Retrieves posts from the current account's personalized LinkedIn home feed (st.retrieveFeed action).",
+        "Retrieves posts from the current account's personalized LinkedIn home feed (st.retrieveFeed action). Each post's author and reposter carry urn — a member URN (urn:li:member:<id>) for a person actor and an organization URN (urn:li:organization:<id>) for a company actor, or null when LinkedIn does not expose it in the feed; fetch_post resolves actor URNs this listing cannot.",
       inputSchema: {
         type: 'object',
         properties: {

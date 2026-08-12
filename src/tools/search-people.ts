@@ -28,7 +28,7 @@ export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown
     return {
       name: this.name,
       description:
-        'Allows you to search people applying various filtering criteria (st.searchPeople action).',
+        'Allows you to search people applying various filtering criteria (st.searchPeople action). Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {

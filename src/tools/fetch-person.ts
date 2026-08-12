@@ -39,7 +39,7 @@ export class FetchPersonTool extends OperationTool<TFetchPersonParams, unknown> 
   public override getTool(): Tool {
     return {
       name: this.name,
-      description: `Allows you to open a person page to retrieve their basic information and perform additional person-related actions if needed. (st.openPersonPage action). Allows additional optional retrieval of experience, education, skills, languages, posts, comments and reactions.
+      description: `Allows you to open a person page to retrieve their basic information and perform additional person-related actions if needed. (st.openPersonPage action). Allows additional optional retrieval of experience, education, skills, languages, posts, comments and reactions. The basic information carries urn — the person's permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it. Retrieved posts carry urn on their author and reposter as well.
 ⚠️ **PERFORMANCE WARNING**: Only set additional retrieval flags to true if you specifically need that data. Each additional parameter significantly increases execution time:
 💡 **Recommendation**: Start with basic info only. Only request additional data if the user explicitly asks for it or if it's essential for the current task.
 `,

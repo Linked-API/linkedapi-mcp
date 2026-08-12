@@ -32,7 +32,7 @@ export class GetNetworkTool extends LinkedApiTool<TNetworkPollRequest, TNetworkP
     return {
       name: this.name,
       description:
-        'Get connection events from the monitored network, newest first. Requires network monitoring to be enabled once with sync_network. Event types: "connectionAccepted" (a connection request you sent was accepted), "connectionAdded" (a new connection appeared in your network), "connectionRequestReceived" (someone sent you a connection request).',
+        'Get connection events from the monitored network, newest first. Requires network monitoring to be enabled once with sync_network. Event types: "connectionAccepted" (a connection request you sent was accepted), "connectionAdded" (a new connection appeared in your network), "connectionRequestReceived" (someone sent you a connection request). Every event carries personUrn — the permanent LinkedIn member URN (urn:li:member:<id>) of the person the event is about, or null when LinkedIn does not expose it or the event was recorded before URNs were captured.',
       inputSchema: {
         type: 'object',
         properties: {

@@ -57,7 +57,7 @@ operationName: OPERATION_NAME.nvSyncConversation };
     return {
       name: this.name,
       description:
-        'Retrieve a conversation with a LinkedIn person via Sales Navigator messaging. Returns the conversation immediately if it has already been synced. If the conversation has not been synced yet, this tool starts an nvSyncConversation workflow and returns its ack ({status, workflowId, operationName: "nvSyncConversation", message}); the client should call get_workflow_result with that workflowId until completion, then call nv_get_conversation again to read the synced messages.',
+        'Retrieve a conversation with a LinkedIn person via Sales Navigator messaging. Returns the conversation immediately if it has already been synced. If the conversation has not been synced yet, this tool starts an nvSyncConversation workflow and returns its ack ({status, workflowId, operationName: "nvSyncConversation", message}); the client should call get_workflow_result with that workflowId until completion, then call nv_get_conversation again to read the synced messages. The result carries personUrn — the permanent LinkedIn member URN (urn:li:member:<id>) of the person, or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {

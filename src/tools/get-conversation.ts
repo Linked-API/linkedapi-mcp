@@ -57,7 +57,7 @@ operationName: OPERATION_NAME.syncConversation };
     return {
       name: this.name,
       description:
-        'Retrieve a conversation with a LinkedIn person via standard LinkedIn messaging. Returns the conversation immediately if it has already been synced. If the conversation has not been synced yet, this tool starts a syncConversation workflow and returns its ack ({status, workflowId, operationName: "syncConversation", message}); the client should call get_workflow_result with that workflowId until completion, then call get_conversation again to read the synced messages. The result carries syncUntil — the moment syncing of this conversation stops. Once it is in the past the messages are still returned but no longer updated; call sync_conversation again for the same person to resume updates.',
+        'Retrieve a conversation with a LinkedIn person via standard LinkedIn messaging. Returns the conversation immediately if it has already been synced. If the conversation has not been synced yet, this tool starts a syncConversation workflow and returns its ack ({status, workflowId, operationName: "syncConversation", message}); the client should call get_workflow_result with that workflowId until completion, then call get_conversation again to read the synced messages. The result carries syncUntil — the moment syncing of this conversation stops. Once it is in the past the messages are still returned but no longer updated; call sync_conversation again for the same person to resume updates. It also carries personUrn — the permanent LinkedIn member URN (urn:li:member:<id>) of the person, or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {

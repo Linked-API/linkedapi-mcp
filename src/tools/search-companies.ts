@@ -36,7 +36,7 @@ export class SearchCompaniesTool extends OperationTool<TSearchCompaniesParams, u
     return {
       name: this.name,
       description:
-        'Allows you to search for companies applying various filtering criteria (st.searchCompanies action).',
+        'Allows you to search for companies applying various filtering criteria (st.searchCompanies action). Every company in the result carries urn — its permanent LinkedIn organization URN (urn:li:organization:<id>), or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {

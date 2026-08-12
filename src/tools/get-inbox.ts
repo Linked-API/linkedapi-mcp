@@ -30,7 +30,7 @@ export class GetInboxTool extends LinkedApiTool<TInboxPollRequest, TInboxPollRes
     return {
       name: this.name,
       description:
-        'Get messages from the monitored inbox across all conversations (standard and Sales Navigator), newest first. Requires inbox monitoring to be enabled once with sync_inbox (or nv_sync_inbox for Sales Navigator).',
+        'Get messages from the monitored inbox across all conversations (standard and Sales Navigator), newest first. Requires inbox monitoring to be enabled once with sync_inbox (or nv_sync_inbox for Sales Navigator). Every message carries personUrn — the permanent LinkedIn member URN (urn:li:member:<id>) of the person on the other side of the thread, or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {
