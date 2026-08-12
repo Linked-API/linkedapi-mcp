@@ -44,7 +44,7 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
     return {
       name: this.name,
       description:
-        'Allows you to open a company page to retrieve its basic information (st.openCompanyPage action). Can optionally retrieve employees, posts and decision makers.',
+        'Allows you to open a company page to retrieve its basic information (st.openCompanyPage action). Can optionally retrieve employees, posts and decision makers. The basic information carries urn — the permanent LinkedIn organization URN of the company (urn:li:organization:<id>); retrieved employees and decision makers carry their own member urn (urn:li:member:<id>), and retrieved posts carry urn on their author and reposter. Each of them is null when LinkedIn does not expose the identifier.',
       inputSchema: {
         type: 'object',
         properties: {

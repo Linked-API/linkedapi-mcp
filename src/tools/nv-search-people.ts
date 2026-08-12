@@ -29,7 +29,7 @@ export class NvSearchPeopleTool extends OperationTool<TNvSearchPeopleParams, unk
     return {
       name: this.name,
       description:
-        'Allows you to search people in Sales Navigator applying various filtering criteria. (nv.searchPeople action).',
+        'Allows you to search people in Sales Navigator applying various filtering criteria. (nv.searchPeople action). Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it. The same person carries the same urn in standard interface results, so it can be used to match Sales Navigator results against them.',
       inputSchema: {
         type: 'object',
         properties: {

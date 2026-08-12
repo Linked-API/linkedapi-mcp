@@ -29,7 +29,7 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
     return {
       name: this.name,
       description:
-        'Open a LinkedIn post and retrieve its data, with optional comments and reactions. (st.openPost action).',
+        'Open a LinkedIn post and retrieve its data, with optional comments and reactions. (st.openPost action). The author and reposter carry urn — a member URN (urn:li:member:<id>) for a person actor and an organization URN (urn:li:organization:<id>) for a company actor — and retrieved reactions carry engagerUrn for the same identity; each is null when LinkedIn does not expose the identifier. This action reads identifiers from the post page itself, so it resolves actor URNs that post listings such as retrieve_feed cannot. Comment authors carry no URN.',
       inputSchema: {
         type: 'object',
         properties: {

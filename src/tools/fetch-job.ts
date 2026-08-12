@@ -15,7 +15,7 @@ export class FetchJobTool extends OperationTool<TBaseFetchJobParams, unknown> {
     return {
       name: this.name,
       description:
-        'Open a LinkedIn job and retrieve its details such as company, location, salary, and description (st.openJob action).',
+        'Open a LinkedIn job and retrieve its details such as company, location, salary, and description (st.openJob action). The result carries urn — the permanent LinkedIn job posting URN (urn:li:jobPosting:<jobId>) — and companyUrn for the hiring company (urn:li:organization:<id>); either is null when LinkedIn does not expose the identifier.',
       inputSchema: {
         type: 'object',
         properties: {

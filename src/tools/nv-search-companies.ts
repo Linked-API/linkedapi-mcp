@@ -42,7 +42,7 @@ export class NvSearchCompaniesTool extends OperationTool<TNvSearchCompaniesParam
     return {
       name: this.name,
       description:
-        'Allows you to search for companies in Sales Navigator applying various filtering criteria. (nv.searchCompanies action).',
+        'Allows you to search for companies in Sales Navigator applying various filtering criteria. (nv.searchCompanies action). Every company in the result carries urn — its permanent LinkedIn organization URN (urn:li:organization:<id>), or null when LinkedIn does not expose it.',
       inputSchema: {
         type: 'object',
         properties: {

@@ -57,7 +57,7 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
     return {
       name: this.name,
       description:
-        'Allows you to search jobs applying various filtering criteria (st.searchJobs action).',
+        'Allows you to search jobs applying various filtering criteria (st.searchJobs action). Every job in the result carries urn — its permanent LinkedIn job posting URN (urn:li:jobPosting:<jobId>), or null when the job id could not be extracted.',
       inputSchema: {
         type: 'object',
         properties: {

@@ -15,7 +15,7 @@ export class NvFetchPersonTool extends OperationTool<TNvOpenPersonPageParams, un
     return {
       name: this.name,
       description:
-        'Allows you to open a person page in Sales Navigator to retrieve their basic information (nv.openPersonPage action).',
+        "Allows you to open a person page in Sales Navigator to retrieve their basic information (nv.openPersonPage action). The result carries urn — the person's permanent LinkedIn member URN (urn:li:member:<id>) — and companyUrn for their current company (urn:li:organization:<id>); either is null when LinkedIn does not expose it. The same person carries the same urn in standard interface results, so it can be used to match Sales Navigator results against them.",
       inputSchema: {
         type: 'object',
         properties: {

@@ -38,7 +38,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
     return {
       name: this.name,
       description:
-        'Allows you to open a company page in Sales Navigator to retrieve its basic information (nv.openCompanyPage action). Can optionally retrieve employees and decision makers.',
+        'Allows you to open a company page in Sales Navigator to retrieve its basic information (nv.openCompanyPage action). Can optionally retrieve employees and decision makers. The basic information carries urn — the permanent LinkedIn organization URN of the company (urn:li:organization:<id>) — and retrieved employees and decision makers carry their own member urn (urn:li:member:<id>); each is null when LinkedIn does not expose the identifier.',
       inputSchema: {
         type: 'object',
         properties: {
