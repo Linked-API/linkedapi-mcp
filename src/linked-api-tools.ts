@@ -51,6 +51,7 @@ import { RetrieveFeedTool } from './tools/retrieve-feed.js';
 import { RetrieveInvitationsTool } from './tools/retrieve-invitations.js';
 import { RetrievePendingRequestsTool } from './tools/retrieve-pending-requests.js';
 import { RetrievePerformanceTool } from './tools/retrieve-performance.js';
+import { RetrieveProfileViewersTool } from './tools/retrieve-profile-viewers.js';
 import { RetrieveSSITool } from './tools/retrieve-ssi.js';
 import { SearchCompaniesTool } from './tools/search-companies.js';
 import { SearchJobsTool } from './tools/search-jobs.js';
@@ -110,6 +111,7 @@ export class LinkedApiTools {
       new ReplyToCommentTool(),
       new CreatePostTool(),
       new RetrieveFeedTool(),
+      new RetrieveProfileViewersTool(),
       new RetrieveSSITool(),
       new RetrievePerformanceTool(),
       // Sales Navigator tools
