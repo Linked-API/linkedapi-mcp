@@ -10,6 +10,8 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
   protected override readonly schema = z.object({
     term: z.string().optional(),
     limit: z.number().min(1).max(1000).optional(),
+    location: z.string().optional(),
+    allowSimilarResults: z.boolean().optional(),
     filter: z
       .object({
         location: z.string().optional(),
@@ -50,6 +52,23 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
         fairChanceEmployer: z.boolean().optional(),
       })
       .optional(),
+    preferences: z
+      .object({
+        datePosted: z.enum(['anyTime', 'past24Hours', 'pastWeek', 'pastMonth']).optional(),
+        experienceLevels: z
+          .array(z.enum(['entryLevel', 'senior', 'manager', 'director', 'executive']))
+          .optional(),
+        employmentTypes: z
+          .array(z.enum(['fullTime', 'partTime', 'contract', 'internship', 'volunteer']))
+          .optional(),
+        companies: z.array(z.string()).optional(),
+        remote: z.boolean().optional(),
+        easyApply: z.boolean().optional(),
+        under10Applicants: z.boolean().optional(),
+        inYourNetwork: z.boolean().optional(),
+        keywords: z.array(z.string()).optional(),
+      })
+      .optional(),
     customSearchUrl: z.string().optional(),
   });
 
@@ -57,7 +76,7 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
     return {
       name: this.name,
       description:
-        'Allows you to search jobs applying various filtering criteria (st.searchJobs action). Every job in the result carries urn — its permanent LinkedIn job posting URN (urn:li:jobPosting:<jobId>), or null when the job id could not be extracted.',
+        'Allows you to search jobs applying various filtering criteria (st.searchJobs action). LinkedIn serves either a classic or an AI-powered jobs search, and the two do not offer the same refinements: send filter for the classic one or preferences for the AI-powered one, never both. Every job in the result carries urn — its permanent LinkedIn job posting URN (urn:li:jobPosting:<jobId>), or null when the job id could not be extracted — and isSimilarMatch, telling whether LinkedIn returned it as a near match rather than an exact one.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -70,14 +89,24 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
             description:
               'Optional. Number of search results to return. Defaults to 10, with a maximum value of 1000.',
           },
+          location: {
+            type: 'string',
+            description:
+              'Optional. Free-form location string. Applied on both versions of LinkedIn jobs search.',
+          },
+          allowSimilarResults: {
+            type: 'boolean',
+            description:
+              'Optional. Defaults to true. When false, near matches are excluded from the results, so fewer results than limit may be returned. Only relevant to the AI-powered search.',
+          },
           filter: {
             type: 'object',
             description:
-              'Optional. Object that specifies filtering criteria for jobs. When multiple filter fields are specified, they are combined using AND logic.',
+              'Optional. Filtering criteria for the classic LinkedIn jobs search. Every specified field is applied, or the action fails. When multiple filter fields are specified, they are combined using AND logic. Mutually exclusive with preferences.',
             properties: {
               location: {
                 type: 'string',
-                description: 'Optional. Free-form location string.',
+                description: 'Optional. Deprecated, use the top-level location instead.',
               },
               datePosted: {
                 type: 'string',
@@ -160,10 +189,67 @@ export class SearchJobsTool extends OperationTool<TSearchJobsParams, unknown> {
               },
             },
           },
+          preferences: {
+            type: 'object',
+            description:
+              "Optional. Filtering criteria for the AI-powered LinkedIn jobs search. LinkedIn decides which of them it offers for a given search, and the ones it does not offer are skipped instead of failing the action. Mutually exclusive with filter. When the account's version of LinkedIn jobs search cannot apply the criteria that were sent, the action fails with searchInterfaceMismatch.",
+            properties: {
+              datePosted: {
+                type: 'string',
+                enum: ['anyTime', 'past24Hours', 'pastWeek', 'pastMonth'],
+                description: 'Optional. How recently the job was posted.',
+              },
+              experienceLevels: {
+                type: 'array',
+                description:
+                  'Optional. Array of experience levels, where senior corresponds to midSeniorLevel in filter.',
+                items: {
+                  type: 'string',
+                  enum: ['entryLevel', 'senior', 'manager', 'director', 'executive'],
+                },
+              },
+              employmentTypes: {
+                type: 'array',
+                description: 'Optional. Array of employment types.',
+                items: {
+                  type: 'string',
+                  enum: ['fullTime', 'partTime', 'contract', 'internship', 'volunteer'],
+                },
+              },
+              companies: {
+                type: 'array',
+                description: 'Optional. Array of company names.',
+                items: { type: 'string' },
+              },
+              remote: {
+                type: 'boolean',
+                description:
+                  'Optional. When true, only remote jobs. The AI-powered search has no on-site or hybrid equivalent.',
+              },
+              easyApply: {
+                type: 'boolean',
+                description: 'Optional. When true, only jobs with Easy Apply.',
+              },
+              under10Applicants: {
+                type: 'boolean',
+                description: 'Optional. When true, only jobs with fewer than 10 applicants.',
+              },
+              inYourNetwork: {
+                type: 'boolean',
+                description: 'Optional. When true, only jobs from your network.',
+              },
+              keywords: {
+                type: 'array',
+                description:
+                  'Optional. Array of free-form skills, technologies or topics to narrow the search by, such as AWS or Fintech. LinkedIn suggests a different set for every search.',
+                items: { type: 'string' },
+              },
+            },
+          },
           customSearchUrl: {
             type: 'string',
             description:
-              'Optional. URL copied from a LinkedIn jobs search page. When specified, overrides term and filter.',
+              'Optional. URL copied from a LinkedIn jobs search page. When specified, overrides term, location, filter and preferences.',
           },
         },
       },
