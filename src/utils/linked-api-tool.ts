@@ -1,4 +1,4 @@
-import LinkedApi, { Operation, TOperationName } from '@linkedapi/node';
+import LinkedApi, { HttpClient, Operation, TOperationName } from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import z from 'zod';
 
@@ -8,6 +8,7 @@ interface TLinkedApiToolExecuteOptions<TParams> {
   linkedapi: LinkedApi;
   args: TParams;
   mcpClient: string;
+  httpClient: HttpClient;
 }
 
 export abstract class LinkedApiTool<TParams, TResult> {

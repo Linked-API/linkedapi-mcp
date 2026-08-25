@@ -11,7 +11,11 @@ const BACKGROUND_WORKFLOW_DESCRIPTION =
   `Linked API actions are queued into a cloud-browser workflow and may take several minutes. The server returns immediately after starting the workflow with {status: 'pending'|'running', pendingReason, workflowId, operationName, message}. To retrieve the final result, call get_workflow_result with the returned workflowId and operationName — it will long-poll until completion or the request budget elapses, then return either the final result or another in-progress snapshot. Do not retry the original tool while a workflow is still running; that creates duplicate queued work.
 
 A pending workflow carries pendingReason: 'queued' means it is waiting its turn behind other work on the same account and will start within minutes. 'outsideWorkingHours' means the account has configured working hours and the workflow is parked until they reopen — possibly the next working day. In that case get_workflow_result returns immediately instead of polling, message states when the window opens, and you should report that to the user rather than looping.` as const;
-const NON_WORKFLOW_TOOL_NAMES = new Set<string>(['get_workflow_result', 'get_api_usage'] as const);
+const NON_WORKFLOW_TOOL_NAMES = new Set<string>([
+  'get_workflow_result',
+  'get_api_usage',
+  'send_feedback',
+] as const);
 
 interface TExecuteWithTokensOptions extends TLinkedApiConfig {
   mcpClient: string;
@@ -82,15 +86,14 @@ export class LinkedApiMCPServer {
         return this.text(JSON.stringify(result, null, 2));
       }
 
-      const linkedapi = new LinkedApi(
-        buildLinkedApiHttpClient(
-          {
-            linkedApiToken: linkedApiToken,
-            identificationToken: identificationToken,
-          },
-          'mcp',
-        ),
+      const httpClient = buildLinkedApiHttpClient(
+        {
+          linkedApiToken: linkedApiToken,
+          identificationToken: identificationToken,
+        },
+        'mcp',
       );
+      const linkedapi = new LinkedApi(httpClient);
 
       const tool = this.tools.toolByName(toolName);
       if (!tool) {
@@ -101,6 +104,7 @@ export class LinkedApiMCPServer {
         linkedapi,
         args: params as never,
         mcpClient,
+        httpClient,
       });
       const duration = this.calculateDuration(startTime);
 

@@ -1,4 +1,4 @@
-import LinkedApi from '@linkedapi/node';
+import LinkedApi, { HttpClient } from '@linkedapi/node';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 import { AcceptInvitationTool } from './tools/accept-invitation.js';
@@ -57,6 +57,7 @@ import { SearchCompaniesTool } from './tools/search-companies.js';
 import { SearchJobsTool } from './tools/search-jobs.js';
 import { SearchPeopleTool } from './tools/search-people.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
+import { SendFeedbackTool } from './tools/send-feedback.js';
 import { SendMessageTool } from './tools/send-message.js';
 import { SyncInboxTool } from './tools/sync-inbox.js';
 import { SyncNetworkTool } from './tools/sync-network.js';
@@ -72,6 +73,7 @@ interface TRegisteredLinkedApiTool {
     linkedapi: LinkedApi;
     args: never;
     mcpClient: string;
+    httpClient: HttpClient;
   }): Promise<TLinkedApiToolResult<unknown>>;
 }
 
@@ -127,6 +129,7 @@ export class LinkedApiTools {
       new ExecuteCustomWorkflowTool(),
       new GetWorkflowResultTool(),
       new GetApiUsageTool(),
+      new SendFeedbackTool(),
     ];
 
     this.adminTools = [
