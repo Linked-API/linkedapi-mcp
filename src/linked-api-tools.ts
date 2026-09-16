@@ -56,6 +56,7 @@ import { RetrieveSSITool } from './tools/retrieve-ssi.js';
 import { SearchCompaniesTool } from './tools/search-companies.js';
 import { SearchJobsTool } from './tools/search-jobs.js';
 import { SearchPeopleTool } from './tools/search-people.js';
+import { SearchPostsTool } from './tools/search-posts.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendFeedbackTool } from './tools/send-feedback.js';
 import { SendMessageTool } from './tools/send-message.js';
@@ -103,6 +104,7 @@ export class LinkedApiTools {
       new SearchCompaniesTool(),
       new SearchPeopleTool(),
       new SearchJobsTool(),
+      new SearchPostsTool(),
       new FetchCompanyTool(),
       new FetchPersonTool(),
       new FetchPostTool(),
