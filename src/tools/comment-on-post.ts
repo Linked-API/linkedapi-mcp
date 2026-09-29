@@ -8,7 +8,8 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, TComm
   public override readonly name = 'comment_on_post';
   public override readonly operationName = OPERATION_NAME.commentOnPost;
   protected override readonly schema = z.object({
-    postUrl: z.string(),
+    postUrl: z.string().optional(),
+    postUrn: z.string().optional(),
     text: z.string().min(1),
     companyUrl: z.string().optional(),
   });
@@ -24,7 +25,12 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, TComm
           postUrl: {
             type: 'string',
             description:
-              "The LinkedIn post URL to comment on (e.g., 'https://www.linkedin.com/posts/username_activity-id')",
+              "The LinkedIn post URL to comment on (e.g., 'https://www.linkedin.com/posts/username_activity-id') Provide this or postUrn.",
+          },
+          postUrn: {
+            type: 'string',
+            description:
+              "URN of the post to comment on, as an alternative to postUrl. (e.g., 'urn:li:activity:1234567890123456789')",
           },
           text: {
             type: 'string',
@@ -36,7 +42,7 @@ export class CommentOnPostTool extends OperationTool<TCommentOnPostParams, TComm
               "LinkedIn company page URL. If specified, the comment will be added on behalf of the company. (e.g., 'https://www.linkedin.com/company/acme-corp')",
           },
         },
-        required: ['postUrl', 'text'],
+        required: ['text'],
       },
     };
   }
