@@ -8,7 +8,8 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
   public override readonly name = 'react_to_post';
   public override readonly operationName = OPERATION_NAME.reactToPost;
   protected override readonly schema = z.object({
-    postUrl: z.string(),
+    postUrl: z.string().optional(),
+    postUrn: z.string().optional(),
     type: z.enum(['like', 'love', 'celebrate', 'support', 'funny', 'insightful']).or(z.string()),
     companyUrl: z.string().optional(),
   });
@@ -24,7 +25,12 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
           postUrl: {
             type: 'string',
             description:
-              "LinkedIn URL of the post to react. (e.g., 'https://www.linkedin.com/posts/username_activity-id')",
+              "LinkedIn URL of the post to react. (e.g., 'https://www.linkedin.com/posts/username_activity-id') Provide this or postUrn.",
+          },
+          postUrn: {
+            type: 'string',
+            description:
+              "URN of the post to react to, as an alternative to postUrl. (e.g., 'urn:li:activity:1234567890123456789')",
           },
           type: {
             type: 'string',
@@ -37,7 +43,7 @@ export class ReactToPostTool extends OperationTool<TReactToPostParams, unknown> 
               "LinkedIn company page URL. If specified, the reaction will be added on behalf of the company. (e.g., 'https://www.linkedin.com/company/acme-corp')",
           },
         },
-        required: ['postUrl', 'type'],
+        required: ['type'],
       },
     };
   }

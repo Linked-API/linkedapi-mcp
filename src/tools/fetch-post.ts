@@ -8,7 +8,8 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
   public override readonly name = 'fetch_post';
   public override readonly operationName = OPERATION_NAME.fetchPost;
   protected override readonly schema = z.object({
-    postUrl: z.string(),
+    postUrl: z.string().optional(),
+    postUrn: z.string().optional(),
     retrieveComments: z.boolean().optional(),
     retrieveReactions: z.boolean().optional(),
     commentsRetrievalConfig: z
@@ -36,7 +37,12 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
           postUrl: {
             type: 'string',
             description:
-              "LinkedIn URL of the post. (e.g., 'https://www.linkedin.com/posts/username_activity-id')",
+              "LinkedIn URL of the post. (e.g., 'https://www.linkedin.com/posts/username_activity-id') Provide this or postUrn.",
+          },
+          postUrn: {
+            type: 'string',
+            description:
+              "URN of the post to fetch, as an alternative to postUrl. (e.g., 'urn:li:activity:1234567890123456789')",
           },
           retrieveComments: {
             type: 'boolean',
@@ -83,7 +89,7 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
             },
           },
         },
-        required: ['postUrl'],
+        required: [],
       },
     };
   }

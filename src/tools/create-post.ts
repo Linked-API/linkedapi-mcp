@@ -9,6 +9,17 @@ export class CreatePostTool extends OperationTool<TCreatePostParams, unknown> {
   public override readonly operationName = OPERATION_NAME.createPost;
   protected override readonly schema = z.object({
     text: z.string().min(1).max(3000),
+    mentions: z
+      .array(
+        z.object({
+          key: z.string(),
+          name: z.string(),
+          urn: z.string().optional(),
+          personHashedUrl: z.string().optional(),
+          companyHashedUrl: z.string().optional(),
+        }),
+      )
+      .optional(),
     companyUrl: z.string().optional(),
     attachments: z
       .array(
@@ -26,13 +37,49 @@ export class CreatePostTool extends OperationTool<TCreatePostParams, unknown> {
     return {
       name: this.name,
       description:
-        'Creates a new LinkedIn post with optional media attachments (st.createPost action). If this workflow is still running, do not retry this tool; retrying can create duplicate posts.',
+        'Creates a new LinkedIn post with optional mentions and media attachments (st.createPost action). Returns the URL and URN of the new post. If this workflow is still running, do not retry this tool; retrying can create duplicate posts.',
       inputSchema: {
         type: 'object',
         properties: {
           text: {
             type: 'string',
-            description: 'Post content, must be up to 3000 characters.',
+            description:
+              'Post content, must be up to 3000 characters. Write "@[key]" where a mention should appear and describe that key in mentions.',
+          },
+          mentions: {
+            type: 'array',
+            description:
+              'People and companies to mention in the text. Each item binds a "@[key]" placeholder to one entity.',
+            items: {
+              type: 'object',
+              properties: {
+                key: {
+                  type: 'string',
+                  description:
+                    'Placeholder name used in the text as "@[key]". 1-30 characters: letters, digits, underscore or hyphen.',
+                },
+                name: {
+                  type: 'string',
+                  description:
+                    'Name to find the person or company by. Always required: LinkedIn resolves a mention through its own name suggestions.',
+                },
+                urn: {
+                  type: 'string',
+                  description:
+                    "URN of the entity (e.g., 'urn:li:member:123456789' or 'urn:li:organization:1234567'). Decides which of the offered namesakes is taken.",
+                },
+                personHashedUrl: {
+                  type: 'string',
+                  description:
+                    'Hashed LinkedIn profile URL of the person, as an alternative to urn.',
+                },
+                companyHashedUrl: {
+                  type: 'string',
+                  description: 'Hashed LinkedIn company page URL, as an alternative to urn.',
+                },
+              },
+              required: ['key', 'name'],
+            },
           },
           companyUrl: {
             type: 'string',

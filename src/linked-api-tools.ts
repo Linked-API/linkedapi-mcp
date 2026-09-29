@@ -22,6 +22,7 @@ import { AdminSetSeatsTool } from './tools/admin-set-seats.js';
 import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { CreatePostTool } from './tools/create-post.js';
+import { CreateRepostTool } from './tools/create-repost.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
 import { FetchCompanyTool } from './tools/fetch-company.js';
 import { FetchJobTool } from './tools/fetch-job.js';
@@ -114,6 +115,7 @@ export class LinkedApiTools {
       new ReactToCommentTool(),
       new ReplyToCommentTool(),
       new CreatePostTool(),
+      new CreateRepostTool(),
       new RetrieveFeedTool(),
       new RetrieveProfileViewersTool(),
       new RetrieveSSITool(),
