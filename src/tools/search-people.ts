@@ -20,6 +20,7 @@ export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown
         currentCompanies: z.array(z.string()).optional(),
         previousCompanies: z.array(z.string()).optional(),
         schools: z.array(z.string()).optional(),
+        connectionDegrees: z.array(z.enum(['1st', '2nd', '3rd+'])).optional(),
       })
       .optional(),
   });
@@ -28,7 +29,7 @@ export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown
     return {
       name: this.name,
       description:
-        'Allows you to search people applying various filtering criteria (st.searchPeople action). Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it.',
+        'Allows you to search people applying various filtering criteria (st.searchPeople action). Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it. Every person also carries viewerState.connectionDegree — your connection degree to them (1st, 2nd, 3rd+), or null when LinkedIn shows none.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -87,6 +88,15 @@ export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown
                 description:
                   'Optional. Array of institution names. Matches if person currently attends or previously attended any of the listed institutions.',
                 items: { type: 'string' },
+              },
+              connectionDegrees: {
+                type: 'array',
+                description:
+                  'Optional. Array of enums representing your connection degree to the person. Matches if the person is at any of the listed degrees.',
+                items: {
+                  type: 'string',
+                  enum: ['1st', '2nd', '3rd+'],
+                },
               },
             },
           },

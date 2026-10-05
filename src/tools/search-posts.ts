@@ -165,7 +165,7 @@ export class SearchPostsTool extends OperationTool<TSearchPostsParams, unknown> 
               fromMembers: {
                 type: 'array',
                 description:
-                  'Optional. Array of people whose posts to keep. Each entry is a plain name string, or an object with name plus an optional urn or personHashedUrl that pins the exact person; both forms can be mixed in one array. With a name alone LinkedIn takes whichever suggestion it ranked first, which may be a namesake. An identifier no suggestion resolves to fails the action with filterIdentityMismatch rather than filtering by a namesake.',
+                  'Optional. Array of people whose posts to keep. Each entry is a plain name string, or an object with name plus an optional urn or personHashedUrl that pins the exact person; both forms can be mixed in one array. With a name alone LinkedIn takes whichever suggestion it ranked first, which may be a namesake. An identifier no suggestion resolves to fails the action with filterNotApplied rather than filtering by a namesake.',
                 items: PERSON_FILTER_ENTRY_JSON_SCHEMA,
               },
               fromCompanies: {
