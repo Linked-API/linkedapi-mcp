@@ -34,6 +34,7 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
             locations: z.array(z.string()).optional(),
             industries: z.array(z.string()).optional(),
             schools: z.array(z.string()).optional(),
+            connectionDegrees: z.array(z.enum(['1st', '2nd', '3rd+'])).optional(),
           })
           .optional(),
       })
@@ -141,6 +142,15 @@ export class FetchCompanyTool extends OperationTool<TFetchCompanyParams, unknown
                     description:
                       'Optional. Array of institution names. Matches if employee currently attends or previously attended any of the listed institutions.',
                     items: { type: 'string' },
+                  },
+                  connectionDegrees: {
+                    type: 'array',
+                    description:
+                      'Optional. Array of enums representing your connection degree to the employee. Matches if the employee is at any of the listed degrees.',
+                    items: {
+                      type: 'string',
+                      enum: ['1st', '2nd', '3rd+'],
+                    },
                   },
                 },
               },

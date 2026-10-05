@@ -23,6 +23,7 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
             industries: z.array(z.string()).optional(),
             schools: z.array(z.string()).optional(),
             yearsOfExperiences: z.array(z.string()).optional(),
+            connectionDegrees: z.array(z.enum(['1st', '2nd', '3rd+', 'groupMembers'])).optional(),
           })
           .optional(),
       })
@@ -110,6 +111,15 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
                     items: {
                       type: 'string',
                       enum: ['lessThanOne', 'oneToTwo', 'threeToFive', 'sixToTen', 'moreThanTen'],
+                    },
+                  },
+                  connectionDegrees: {
+                    type: 'array',
+                    description:
+                      'Optional. Array of enums representing your connection degree to the employee. Matches if the employee is at any of the listed degrees. groupMembers matches members of LinkedIn groups you belong to.',
+                    items: {
+                      type: 'string',
+                      enum: ['1st', '2nd', '3rd+', 'groupMembers'],
                     },
                   },
                 },
