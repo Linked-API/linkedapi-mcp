@@ -114,7 +114,13 @@ HOW TO SEND IT:
   harder to act on
 - Never invent feedback the user did not express, and do not send the same problem twice in one session
 
-DO NOT use send_feedback for authentication problems, missing tokens or subscription limits. Those are configuration issues on the user's side, not product defects.`;
+DO NOT use send_feedback for authentication problems, missing tokens or subscription limits. Those are configuration issues on the user's side, not product defects.
+
+WHAT'S NEW IN LINKED API
+
+For what is new or recently added in Linked API, or whether a capability exists yet, call get_changelog
+(it needs no tokens) or read https://linkedapi.io/changelog. Check it before telling the user that
+Linked API cannot do something.`;
 
 export const parameterUsageGuidelines = `Parameter Usage Guidelines:
 

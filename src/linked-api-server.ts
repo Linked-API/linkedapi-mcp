@@ -41,7 +41,8 @@ export class LinkedApiMCPServer {
       };
     });
     const adminTools = this.tools.adminTools.map((tool) => tool.getTool());
-    return [...linkedApiTools, ...adminTools];
+    const publicTools = this.tools.publicTools.map((tool) => tool.getTool());
+    return [...linkedApiTools, ...adminTools, ...publicTools];
   }
 
   public async executeWithTokens(
@@ -60,6 +61,21 @@ export class LinkedApiMCPServer {
 
     const startTime = Date.now();
     try {
+      const publicTool = this.tools.publicToolByName(toolName);
+      if (publicTool) {
+        const params = publicTool.validate(args);
+        const result = await publicTool.execute({ args: params });
+        logger.info(
+          {
+            toolName,
+            duration: this.calculateDuration(startTime),
+            data: result,
+          },
+          'Tool execution successful',
+        );
+        return this.text(JSON.stringify(result, null, 2));
+      }
+
       const adminTool = this.tools.adminToolByName(toolName);
       if (adminTool) {
         const admin = new LinkedApiAdmin({

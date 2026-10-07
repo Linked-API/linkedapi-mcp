@@ -29,6 +29,7 @@ import { FetchJobTool } from './tools/fetch-job.js';
 import { FetchPersonTool } from './tools/fetch-person.js';
 import { FetchPostTool } from './tools/fetch-post.js';
 import { GetApiUsageTool } from './tools/get-api-usage-stats.js';
+import { GetChangelogTool } from './tools/get-changelog.js';
 import { GetConversationTool } from './tools/get-conversation.js';
 import { GetInboxTool } from './tools/get-inbox.js';
 import { GetNetworkTool } from './tools/get-network.js';
@@ -66,6 +67,7 @@ import { SyncNetworkTool } from './tools/sync-network.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
 import type { TLinkedApiToolResult } from './types/linked-api-tool-result.type.js';
 import { AdminTool } from './utils/admin-tool.js';
+import { PublicTool } from './utils/public-tool.js';
 
 interface TRegisteredLinkedApiTool {
   readonly name: string;
@@ -82,6 +84,7 @@ interface TRegisteredLinkedApiTool {
 export class LinkedApiTools {
   public readonly tools: ReadonlyArray<TRegisteredLinkedApiTool>;
   public readonly adminTools: ReadonlyArray<AdminTool<unknown, unknown>>;
+  public readonly publicTools: ReadonlyArray<PublicTool<unknown, unknown>>;
 
   constructor() {
     this.tools = [
@@ -155,6 +158,8 @@ export class LinkedApiTools {
       new AdminDeleteLimitsTool(),
       new AdminResetLimitsTool(),
     ];
+
+    this.publicTools = [new GetChangelogTool()];
   }
 
   public toolByName(name: string): TRegisteredLinkedApiTool | undefined {
@@ -163,5 +168,9 @@ export class LinkedApiTools {
 
   public adminToolByName(name: string): AdminTool<unknown, unknown> | undefined {
     return this.adminTools.find((tool) => tool.name === name);
+  }
+
+  public publicToolByName(name: string): PublicTool<unknown, unknown> | undefined {
+    return this.publicTools.find((tool) => tool.name === name);
   }
 }
