@@ -8,6 +8,7 @@ const PERSON_FILTER_ENTRY_SCHEMA = z.union([
   z.string().min(1).max(100),
   z.object({
     name: z.string().min(1).max(100),
+    id: z.string().optional(),
     urn: z.string().optional(),
     personHashedUrl: z.string().optional(),
   }),
@@ -17,6 +18,7 @@ const COMPANY_FILTER_ENTRY_SCHEMA = z.union([
   z.string().min(1).max(100),
   z.object({
     name: z.string().min(1).max(100),
+    id: z.string().optional(),
     urn: z.string().optional(),
     companyHashedUrl: z.string().optional(),
   }),
@@ -37,15 +39,12 @@ const PERSON_FILTER_ENTRY_JSON_SCHEMA = {
           type: 'string',
           minLength: 1,
           maxLength: 100,
-          description: 'Required. Name to type into the LinkedIn filter panel.',
+          description: 'Required. Name of the person.',
         },
-        urn: {
+        id: {
           type: 'string',
-          description: 'Optional. Member URN of the person, urn:li:member:<id>.',
-        },
-        personHashedUrl: {
-          type: 'string',
-          description: 'Optional. Hashed LinkedIn URL of the person.',
+          description:
+            'Optional. Any identifier of the person: URN, or public or hashed LinkedIn URL. Pins the filter to exactly that person.',
         },
       },
       required: ['name'],
@@ -68,15 +67,12 @@ const COMPANY_FILTER_ENTRY_JSON_SCHEMA = {
           type: 'string',
           minLength: 1,
           maxLength: 100,
-          description: 'Required. Name to type into the LinkedIn filter panel.',
+          description: 'Required. Name of the company.',
         },
-        urn: {
+        id: {
           type: 'string',
-          description: 'Optional. Organization URN of the company, urn:li:organization:<id>.',
-        },
-        companyHashedUrl: {
-          type: 'string',
-          description: 'Optional. Hashed LinkedIn URL of the company.',
+          description:
+            'Optional. Any identifier of the company: URN, public or hashed LinkedIn URL, or numeric ID. Pins the filter to exactly that company.',
         },
       },
       required: ['name'],
@@ -165,13 +161,13 @@ export class SearchPostsTool extends OperationTool<TSearchPostsParams, unknown> 
               fromMembers: {
                 type: 'array',
                 description:
-                  'Optional. Array of people whose posts to keep. Each entry is a plain name string, or an object with name plus an optional urn or personHashedUrl that pins the exact person; both forms can be mixed in one array. With a name alone LinkedIn takes whichever suggestion it ranked first, which may be a namesake. An identifier no suggestion resolves to fails the action with filterNotApplied rather than filtering by a namesake.',
+                  'Optional. Array of people whose posts to keep. Each entry is a name, or { name, id }; both forms can be mixed in one array. A name alone may match a namesake; id pins the exact person. When an entry cannot be applied, the action fails with filterNotApplied rather than filtering by somebody else.',
                 items: PERSON_FILTER_ENTRY_JSON_SCHEMA,
               },
               fromCompanies: {
                 type: 'array',
                 description:
-                  'Optional. Array of companies whose posts to keep. Same entry shape as fromMembers, with companyHashedUrl in place of personHashedUrl.',
+                  'Optional. Array of companies whose posts to keep. Same entry shape as fromMembers.',
                 items: COMPANY_FILTER_ENTRY_JSON_SCHEMA,
               },
               mentioningMembers: {
