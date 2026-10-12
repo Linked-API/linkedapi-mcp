@@ -43,6 +43,7 @@ import { NvManageConversationTool } from './tools/nv-manage-conversation.js';
 import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
+import { NvSyncConversationTool } from './tools/nv-sync-conversation.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { ReactToCommentTool } from './tools/react-to-comment.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
@@ -62,6 +63,7 @@ import { SearchPostsTool } from './tools/search-posts.js';
 import { SendConnectionRequestTool } from './tools/send-connection-request.js';
 import { SendFeedbackTool } from './tools/send-feedback.js';
 import { SendMessageTool } from './tools/send-message.js';
+import { SyncConversationTool } from './tools/sync-conversation.js';
 import { SyncInboxTool } from './tools/sync-inbox.js';
 import { SyncNetworkTool } from './tools/sync-network.js';
 import { WithdrawConnectionRequestTool } from './tools/withdraw-connection-request.js';
@@ -90,9 +92,10 @@ export class LinkedApiTools {
     this.tools = [
       // Standard tools
       new SendMessageTool(),
-      new GetConversationTool(),
       new SyncInboxTool(),
       new GetInboxTool(),
+      new SyncConversationTool(),
+      new GetConversationTool(),
       new SyncNetworkTool(),
       new GetNetworkTool(),
       new ManageConversationTool(),
@@ -125,8 +128,9 @@ export class LinkedApiTools {
       new RetrievePerformanceTool(),
       // Sales Navigator tools
       new NvSendMessageTool(),
-      new NvGetConversationTool(),
       new NvSyncInboxTool(),
+      new NvSyncConversationTool(),
+      new NvGetConversationTool(),
       new NvManageConversationTool(),
       new NvSearchCompaniesTool(),
       new NvSearchPeopleTool(),
