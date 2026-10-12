@@ -13,7 +13,7 @@ export class SyncInboxTool extends OperationTool<TSyncInboxParams, unknown> {
     return {
       name: this.name,
       description:
-        'Enable whole-inbox monitoring so every incoming conversation can be polled with get_inbox (st.syncInbox action). Run once per account; only messages that arrive after it is enabled are captured.',
+        'Recommended first step before reading messages. Enable whole-inbox monitoring so every incoming conversation can be polled with get_inbox (st.syncInbox action). Run once per account, before sending messages whose replies you want to read; only messages that arrive after it is enabled are captured.',
       inputSchema: {
         type: 'object',
         properties: {},

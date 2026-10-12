@@ -16,19 +16,19 @@ export class SyncConversationTool extends OperationTool<TSyncConversationParams,
     return {
       name: this.name,
       description:
-        'Allows you to sync a conversation so you can start polling it (st.syncConversation action).',
+        "Loads this person's earlier message history (st.syncConversation action). Call once per person; repeating it within 24 hours returns quickly. Do not call it to check for new messages – use get_inbox. After it completes, read the history with get_inbox and personUrl.",
       inputSchema: {
         type: 'object',
         properties: {
           personUrl: {
             type: 'string',
             description:
-              "The LinkedIn URL of the person whose conversation you want to synchronize (e.g., 'https://www.linkedin.com/in/john-doe')",
+              "The LinkedIn URL of the person whose message history you want to load (e.g., 'https://www.linkedin.com/in/john-doe')",
           },
           days: {
             type: 'number',
             description:
-              'How many days the conversation stays synchronized, from 1 to 90. Defaults to 30. Counted from the moment the action starts running; a reply does not extend it. Syncing the same person again starts a new period and keeps the history already collected.',
+              'Syncing period, not the depth of history: how many days new messages keep being added to the loaded history, from 1 to 90. Defaults to 30. The whole conversation is read regardless. Counted from the moment the action starts running; a reply does not extend it. Syncing the same person again keeps the history already collected and never shortens the period.',
           },
         },
         required: ['personUrl'],

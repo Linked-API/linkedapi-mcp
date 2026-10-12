@@ -13,7 +13,7 @@ export class NvSyncInboxTool extends OperationTool<TNvSyncInboxParams, unknown> 
     return {
       name: this.name,
       description:
-        'Enable whole-inbox monitoring in Sales Navigator so every incoming conversation can be polled with get_inbox (nv.syncInbox action). Run once per account; only messages that arrive after it is enabled are captured.',
+        'Recommended first step before reading Sales Navigator messages. Enable whole-inbox monitoring in Sales Navigator so every incoming conversation can be polled with get_inbox (nv.syncInbox action). Run once per account, before sending messages whose replies you want to read; only messages that arrive after it is enabled are captured.',
       inputSchema: {
         type: 'object',
         properties: {},
