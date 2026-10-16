@@ -23,6 +23,8 @@ import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { CreatePostTool } from './tools/create-post.js';
 import { CreateRepostTool } from './tools/create-repost.js';
+import { EndorsePersonSkillTool } from './tools/endorse-person-skill.js';
+import { EndorsePersonSkillsTool } from './tools/endorse-person-skills.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
 import { FetchCompanyTool } from './tools/fetch-company.js';
 import { FetchJobTool } from './tools/fetch-job.js';
@@ -114,6 +116,8 @@ export class LinkedApiTools {
       new SearchPostsTool(),
       new FetchCompanyTool(),
       new FetchPersonTool(),
+      new EndorsePersonSkillTool(),
+      new EndorsePersonSkillsTool(),
       new FetchPostTool(),
       new FetchJobTool(),
       new ReactToPostTool(),

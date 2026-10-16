@@ -32,7 +32,7 @@ export class AdminSetLimitsTool extends AdminTool<TSetLimitsParams, void> {
     return {
       name: this.name,
       description:
-        'Set rate limits for an account. Only specified limits are created or updated; other limits remain unchanged. Categories: stPersonProfileViews, stCompanyPageViews, stConnectionRequests, stMessages, stSearchQueries, stReactions, stComments, stPosts, nvPersonProfileViews, nvCompanyPageViews, nvMessages.',
+        'Set rate limits for an account. Only specified limits are created or updated; other limits remain unchanged. Categories: stPersonProfileViews, stCompanyPageViews, stConnectionRequests, stMessages, stSearchQueries, stReactions, stComments, stPosts, stEndorsements, nvPersonProfileViews, nvCompanyPageViews, nvMessages.',
       inputSchema: {
         type: 'object',
         properties: {

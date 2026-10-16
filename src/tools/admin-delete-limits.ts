@@ -46,7 +46,7 @@ export class AdminDeleteLimitsTool extends AdminTool<TDeleteLimitsParams, void> 
               properties: {
                 category: {
                   type: 'string',
-                  description: 'Limit category',
+                  description: 'Limit category, e.g. stEndorsements',
                 },
                 period: {
                   type: 'string',
