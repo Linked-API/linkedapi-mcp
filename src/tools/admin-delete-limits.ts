@@ -30,7 +30,7 @@ export class AdminDeleteLimitsTool extends AdminTool<TDeleteLimitsParams, void> 
     return {
       name: this.name,
       description:
-        'Delete specific rate limits for an account. Deleted limits fall back to system defaults.',
+        'Delete specific rate limits for an account. Each removed category/period has no limit until set again. Use admin_reset_limits to restore all default limits for the account.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -46,7 +46,7 @@ export class AdminDeleteLimitsTool extends AdminTool<TDeleteLimitsParams, void> 
               properties: {
                 category: {
                   type: 'string',
-                  description: 'Limit category',
+                  description: 'Limit category, e.g. stEndorsements',
                 },
                 period: {
                   type: 'string',
