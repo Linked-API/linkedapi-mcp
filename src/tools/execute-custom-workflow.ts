@@ -43,7 +43,7 @@ export class ExecuteCustomWorkflowTool extends OperationTool<
           },
           definition: {
             description: 'A single-action or array workflow definition.',
-            oneOf: [
+            anyOf: [
               {
                 type: 'object',
                 properties: {
@@ -73,7 +73,6 @@ export class ExecuteCustomWorkflowTool extends OperationTool<
             ],
           },
         },
-        anyOf: [{ required: ['actionType'] }, { required: ['definition'] }],
         additionalProperties: true,
       },
     };

@@ -21,7 +21,7 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
       .optional(),
     reactionsRetrievalConfig: z
       .object({
-        limit: z.number().min(1).max(1000).optional(),
+        limit: z.number().min(1).max(500).optional(),
       })
       .optional(),
   });
@@ -84,7 +84,7 @@ export class FetchPostTool extends OperationTool<TFetchPostParams, unknown> {
               limit: {
                 type: 'number',
                 description:
-                  'Optional. Max number of reactions to retrieve. Defaults to 10, with a maximum value of 1000.',
+                  'Optional. Max number of reactions to retrieve. Defaults to 10, with a maximum value of 500.',
               },
             },
           },

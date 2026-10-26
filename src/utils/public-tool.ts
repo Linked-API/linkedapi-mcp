@@ -1,6 +1,8 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import z from 'zod';
 
+import { unwrapValueEnvelope } from './unwrap-value-envelope.js';
+
 // Tools backed by public Linked API endpoints: they get no client and run without any token.
 export abstract class PublicTool<TParams, TResult> {
   public abstract readonly name: string;
@@ -9,7 +11,7 @@ export abstract class PublicTool<TParams, TResult> {
   public abstract getTool(): Tool;
 
   public validate(args: unknown): TParams {
-    return this.schema.parse(args) as TParams;
+    return this.schema.parse(unwrapValueEnvelope(args, this.getTool().inputSchema)) as TParams;
   }
 
   public abstract execute({ args }: { args: TParams }): Promise<TResult>;
