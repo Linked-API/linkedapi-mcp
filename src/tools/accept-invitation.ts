@@ -59,32 +59,6 @@ export class AcceptInvitationTool extends OperationTool<TAcceptInvitationParams,
         },
         required: ['invitationType'],
         additionalProperties: false,
-        oneOf: [
-          {
-            properties: {
-              invitationType: { const: 'connect' },
-              personUrl: { type: 'string' },
-            },
-            required: ['invitationType', 'personUrl'],
-            additionalProperties: false,
-          },
-          {
-            properties: {
-              invitationType: { const: 'companyFollow' },
-              companyUrl: { type: 'string' },
-            },
-            required: ['invitationType', 'companyUrl'],
-            additionalProperties: false,
-          },
-          {
-            properties: {
-              invitationType: { const: 'newsletterSubscribe' },
-              newsletterUrl: { type: 'string' },
-            },
-            required: ['invitationType', 'newsletterUrl'],
-            additionalProperties: false,
-          },
-        ],
       } as Tool['inputSchema'],
     };
   }

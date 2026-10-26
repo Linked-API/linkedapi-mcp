@@ -25,7 +25,7 @@ const COMPANY_FILTER_ENTRY_SCHEMA = z.union([
 ]);
 
 const PERSON_FILTER_ENTRY_JSON_SCHEMA = {
-  oneOf: [
+  anyOf: [
     {
       type: 'string',
       minLength: 1,
@@ -53,7 +53,7 @@ const PERSON_FILTER_ENTRY_JSON_SCHEMA = {
 };
 
 const COMPANY_FILTER_ENTRY_JSON_SCHEMA = {
-  oneOf: [
+  anyOf: [
     {
       type: 'string',
       minLength: 1,
@@ -202,7 +202,6 @@ export class SearchPostsTool extends OperationTool<TSearchPostsParams, unknown> 
               'Optional. URL copied from a LinkedIn content search page after configuring filters. When specified, filter is ignored entirely.',
           },
         },
-        anyOf: [{ required: ['term'] }, { required: ['customSearchUrl'] }],
       } as Tool['inputSchema'],
     };
   }

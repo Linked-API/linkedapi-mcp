@@ -4,6 +4,8 @@ import z from 'zod';
 
 import type { TLinkedApiToolResult, TWorkflowAck } from '../types/linked-api-tool-result.type.js';
 
+import { unwrapValueEnvelope } from './unwrap-value-envelope.js';
+
 interface TLinkedApiToolExecuteOptions<TParams> {
   linkedapi: LinkedApi;
   args: TParams;
@@ -18,7 +20,7 @@ export abstract class LinkedApiTool<TParams, TResult> {
   public abstract getTool(): Tool;
 
   public validate(args: unknown): TParams {
-    return this.schema.parse(args) as TParams;
+    return this.schema.parse(unwrapValueEnvelope(args, this.getTool().inputSchema)) as TParams;
   }
 
   public abstract execute(
