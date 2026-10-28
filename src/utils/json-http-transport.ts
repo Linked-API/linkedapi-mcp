@@ -117,7 +117,7 @@ export class JsonHTTPServerTransport implements Transport {
       // SSE endpoint: accept GET with text/event-stream
       const acceptHeader = (req.headers['accept'] || '').toString();
       if (req.method === 'GET' && acceptHeader.includes('text/event-stream')) {
-        this.openSseStream(clientKey, res, req.headers);
+        this.openSseStream(clientKey, res);
         return;
       }
 
@@ -135,7 +135,6 @@ export class JsonHTTPServerTransport implements Transport {
         logger.warn(
           {
             method: req.method,
-            headers: req.headers,
           },
           'Rejected non-POST HTTP request',
         );
@@ -161,7 +160,7 @@ export class JsonHTTPServerTransport implements Transport {
         );
         logger.warn(
           {
-            headers: req.headers,
+            accept,
           },
           'Rejected POST due to unacceptable Accept header',
         );
@@ -183,7 +182,7 @@ export class JsonHTTPServerTransport implements Transport {
         );
         logger.warn(
           {
-            headers: req.headers,
+            contentType: ct,
           },
           'Rejected POST due to unsupported Content-Type',
         );
@@ -374,11 +373,7 @@ export class JsonHTTPServerTransport implements Transport {
     ctx.res.end(JSON.stringify(body));
   }
 
-  private openSseStream(
-    clientKey: string,
-    res: ServerResponse,
-    headers: IncomingMessage['headers'],
-  ): void {
+  private openSseStream(clientKey: string, res: ServerResponse): void {
     const previous = this.sseStreams.get(clientKey);
     if (previous) {
       try {
@@ -407,19 +402,14 @@ export class JsonHTTPServerTransport implements Transport {
       keepalive,
     };
     this.sseStreams.set(clientKey, stream);
-    logger.info(
-      {
-        headers,
-      },
-      'SSE connection established',
-    );
+    logger.debug('SSE connection established');
 
     res.on('close', () => {
       clearInterval(keepalive);
       if (this.sseStreams.get(clientKey) === stream) {
         this.sseStreams.delete(clientKey);
       }
-      logger.info('SSE connection closed by client');
+      logger.debug('SSE connection closed by client');
     });
   }
 
