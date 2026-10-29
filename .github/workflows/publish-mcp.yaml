@@ -53,7 +53,16 @@ jobs:
             npm publish --access public
           fi
           VERSION=$(node -p "require('./package.json').version")
-          test "$(npm view "@linkedapi/mcp@$VERSION" mcpName)" = "$(node -p "require('./package.json').mcpName")"
+          MCP_NAME=$(node -p "require('./package.json').mcpName")
+          for ATTEMPT in {1..30}; do
+            if [[ "$(npm view "@linkedapi/mcp@$VERSION" mcpName 2>/dev/null)" == "$MCP_NAME" ]]; then
+              exit 0
+            fi
+            echo "Waiting for @linkedapi/mcp@$VERSION metadata to become available ($ATTEMPT/30)"
+            sleep 10
+          done
+          echo 'Published npm metadata did not become available within five minutes'
+          exit 1
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
