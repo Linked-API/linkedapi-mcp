@@ -1,0 +1,89 @@
+name: Publish to MCP Registry
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Prepare registry version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$GITHUB_REF" == refs/tags/* && "${GITHUB_REF#refs/tags/v}" != "$VERSION" ]]; then
+            echo "Tag must match package.json version $VERSION"
+            exit 1
+          fi
+          jq --arg version "$VERSION" '.version = $version | .packages[].version = $version' server.json > server.tmp
+          mv server.tmp server.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint and build
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run build
+
+      - name: Publish npm package if needed
+        run: |
+          npm view @linkedapi/mcp versions --json > "$RUNNER_TEMP/npm-versions.json"
+          if ! node -e 'const versions = require(process.argv[1]); process.exit(versions.includes(require("./package.json").version) ? 0 : 1)' "$RUNNER_TEMP/npm-versions.json"; then
+            npm publish --access public
+          fi
+          VERSION=$(node -p "require('./package.json').version")
+          MCP_NAME=$(node -p "require('./package.json').mcpName")
+          for ATTEMPT in {1..30}; do
+            if [[ "$(npm view "@linkedapi/mcp@$VERSION" mcpName 2>/dev/null)" == "$MCP_NAME" ]]; then
+              exit 0
+            fi
+            echo "Waiting for @linkedapi/mcp@$VERSION metadata to become available ($ATTEMPT/30)"
+            sleep 10
+          done
+          echo 'Published npm metadata did not become available within five minutes'
+          exit 1
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+
+      - name: Download and verify mcp-publisher
+        run: |
+          BASE_URL="https://github.com/modelcontextprotocol/registry/releases/download/$MCP_PUBLISHER_VERSION"
+          ARCHIVE=mcp-publisher_linux_amd64.tar.gz
+          curl --fail --location --silent --show-error --output "$RUNNER_TEMP/$ARCHIVE" "$BASE_URL/$ARCHIVE"
+          curl --fail --location --silent --show-error --output "$RUNNER_TEMP/$ARCHIVE.sigstore.json" "$BASE_URL/$ARCHIVE.sigstore.json"
+          cosign verify-blob \
+            --bundle "$RUNNER_TEMP/$ARCHIVE.sigstore.json" \
+            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/$MCP_PUBLISHER_VERSION" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            "$RUNNER_TEMP/$ARCHIVE"
+          tar xzf "$RUNNER_TEMP/$ARCHIVE" -C "$RUNNER_TEMP" mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: '"$RUNNER_TEMP/mcp-publisher" login github-oidc'
+
+      - name: Publish server to MCP Registry
+        run: '"$RUNNER_TEMP/mcp-publisher" publish'
