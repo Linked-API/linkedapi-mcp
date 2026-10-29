@@ -1,0 +1,56 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Linked-API/linkedapi-mcp",
+  "title": "Linked API",
+  "description": "Manage LinkedIn messages, connections, posts, and profile data through Linked API.",
+  "websiteUrl": "https://linkedapi.io",
+  "repository": {
+    "url": "https://github.com/Linked-API/linkedapi-mcp",
+    "source": "github"
+  },
+  "version": "2.3.21",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@linkedapi/mcp",
+      "version": "2.3.21",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "LINKED_API_TOKEN",
+          "description": "Linked API access token from https://app.linkedapi.io.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "IDENTIFICATION_TOKEN",
+          "description": "Identification token for the LinkedIn account from https://app.linkedapi.io.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.linkedapi.io/mcp",
+      "headers": [
+        {
+          "name": "linked-api-token",
+          "description": "Linked API access token from https://app.linkedapi.io.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "identification-token",
+          "description": "Identification token for the LinkedIn account from https://app.linkedapi.io.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

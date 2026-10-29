@@ -1,6 +1,6 @@
 {
   "name": "@linkedapi/mcp",
-  "version": "2.3.20",
+  "version": "2.3.21",
   "description": "MCP server that lets AI assistants control LinkedIn accounts and retrieve real-time data.",
   "main": "dist/index.js",
   "bin": {
@@ -55,5 +55,6 @@
     "tsx": "^4.7.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
-  }
+  },
+  "mcpName": "io.github.Linked-API/linkedapi-mcp"
 }
