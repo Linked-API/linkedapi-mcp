@@ -42,6 +42,7 @@ import { NvFetchCompanyTool } from './tools/nv-fetch-company.js';
 import { NvFetchPersonTool } from './tools/nv-fetch-person.js';
 import { NvGetConversationTool } from './tools/nv-get-conversation.js';
 import { NvManageConversationTool } from './tools/nv-manage-conversation.js';
+import { NvRetrieveAlertsTool } from './tools/nv-retrieve-alerts.js';
 import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
@@ -136,6 +137,7 @@ export class LinkedApiTools {
       new NvSyncConversationTool(),
       new NvGetConversationTool(),
       new NvManageConversationTool(),
+      new NvRetrieveAlertsTool(),
       new NvSearchCompaniesTool(),
       new NvSearchPeopleTool(),
       new NvFetchCompanyTool(),
