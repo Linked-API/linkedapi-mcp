@@ -7,35 +7,41 @@ import { OperationTool } from '../utils/linked-api-tool.js';
 export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown> {
   public override readonly name = 'search_people';
   public override readonly operationName = OPERATION_NAME.searchPeople;
-  protected override readonly schema = z.object({
-    term: z.string().optional(),
-    limit: z.number().min(1).max(1000).optional(),
-    filter: z
-      .object({
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
-        position: z.string().optional(),
-        locations: z.array(z.string()).optional(),
-        industries: z.array(z.string()).optional(),
-        currentCompanies: z.array(z.string()).optional(),
-        previousCompanies: z.array(z.string()).optional(),
-        schools: z.array(z.string()).optional(),
-        connectionDegrees: z.array(z.enum(['1st', '2nd', '3rd+'])).optional(),
-      })
-      .optional(),
-  });
+  protected override readonly schema = z
+    .object({
+      term: z.string().optional(),
+      limit: z.number().min(1).max(1000).optional(),
+      filter: z
+        .object({
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          position: z.string().optional(),
+          locations: z.array(z.string()).optional(),
+          industries: z.array(z.string()).optional(),
+          currentCompanies: z.array(z.string()).optional(),
+          previousCompanies: z.array(z.string()).optional(),
+          schools: z.array(z.string()).optional(),
+          connectionDegrees: z.array(z.enum(['1st', '2nd', '3rd+'])).optional(),
+        })
+        .optional(),
+      customSearchUrl: z.string().optional(),
+    })
+    .refine(({ term, customSearchUrl }) => Boolean(term) || Boolean(customSearchUrl), {
+      message: 'Either term or customSearchUrl must be provided.',
+    });
 
   public override getTool(): Tool {
     return {
       name: this.name,
       description:
-        'Allows you to search people applying various filtering criteria (st.searchPeople action). Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it. Every person also carries viewerState.connectionDegree — your connection degree to them (1st, 2nd, 3rd+), or null when LinkedIn shows none.',
+        'Allows you to search people applying various filtering criteria (st.searchPeople action). Either term or customSearchUrl must be provided. Every person in the result carries urn — their permanent LinkedIn member URN (urn:li:member:<id>), or null when LinkedIn does not expose it. Every person also carries viewerState.connectionDegree — your connection degree to them (1st, 2nd, 3rd+), or null when LinkedIn shows none.',
       inputSchema: {
         type: 'object',
         properties: {
           term: {
             type: 'string',
-            description: 'Optional. Keyword or phrase to search.',
+            description:
+              'Optional. Keyword or phrase to search. Required unless customSearchUrl is specified.',
           },
           limit: {
             type: 'number',
@@ -99,6 +105,11 @@ export class SearchPeopleTool extends OperationTool<TSearchPeopleParams, unknown
                 },
               },
             },
+          },
+          customSearchUrl: {
+            type: 'string',
+            description:
+              'Optional. URL copied from a LinkedIn people search page (linkedin.com/search/results/people/...), such as the searchUrl of an anonymous viewer from retrieve_profile_viewers. When specified, overrides term and filter.',
           },
         },
       },

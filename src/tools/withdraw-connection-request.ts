@@ -12,7 +12,7 @@ export class WithdrawConnectionRequestTool extends OperationTool<
   public override readonly operationName = OPERATION_NAME.withdrawConnectionRequest;
   protected override readonly schema = z.object({
     personUrl: z.string(),
-    unfollow: z.boolean().optional(),
+    unfollow: z.boolean().optional().default(true),
   });
 
   public override getTool(): Tool {
