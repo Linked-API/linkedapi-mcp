@@ -5,6 +5,7 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { LinkedApiTools } from './linked-api-tools';
 import { handleLinkedApiError } from './utils/handle-linked-api-error';
 import { logger } from './utils/logger';
+import { READ_ONLY_TOOL_NAMES } from './utils/read-only-tool-names';
 import { CallToolResult, ExtendedCallToolRequest } from './utils/types';
 
 const BACKGROUND_WORKFLOW_DESCRIPTION =
@@ -42,7 +43,9 @@ export class LinkedApiMCPServer {
     });
     const adminTools = this.tools.adminTools.map((tool) => tool.getTool());
     const publicTools = this.tools.publicTools.map((tool) => tool.getTool());
-    return [...linkedApiTools, ...adminTools, ...publicTools];
+    return [...linkedApiTools, ...adminTools, ...publicTools].map((definition) =>
+      this.annotate(definition),
+    );
   }
 
   public async executeWithTokens(
@@ -213,6 +216,17 @@ export class LinkedApiMCPServer {
 
       return this.text(`Error executing ${toolName}: ${errorMessage}`);
     }
+  }
+
+  private annotate(definition: Tool): Tool {
+    return {
+      ...definition,
+      annotations: {
+        ...definition.annotations,
+        readOnlyHint: READ_ONLY_TOOL_NAMES.has(definition.name),
+        openWorldHint: true,
+      },
+    };
   }
 
   private text(text: string): CallToolResult {
