@@ -21,7 +21,7 @@ export class NvFetchPersonTool extends OperationTool<TNvOpenPersonPageParams, un
         properties: {
           personHashedUrl: {
             type: 'string',
-            description: 'Hashed LinkedIn URL of the person.',
+            description: 'Public or hashed LinkedIn person URL (/in/... or /sales/lead/...).',
           },
         },
         required: ['personHashedUrl'],

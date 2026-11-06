@@ -45,7 +45,8 @@ export class NvFetchCompanyTool extends OperationTool<TNvFetchCompanyParams, unk
         properties: {
           companyHashedUrl: {
             type: 'string',
-            description: 'Hashed LinkedIn URL of the company.',
+            description:
+              'Public or hashed LinkedIn company URL (/company/... or /sales/company/...).',
           },
           retrieveEmployees: {
             type: 'boolean',

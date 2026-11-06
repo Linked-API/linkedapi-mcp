@@ -38,16 +38,31 @@ import { GetNetworkTool } from './tools/get-network.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
 import { IgnoreInvitationTool } from './tools/ignore-invitation.js';
 import { ManageConversationTool } from './tools/manage-conversation.js';
+import { NvCreateListTool } from './tools/nv-create-list.js';
+import { NvCreateSavedSearchTool } from './tools/nv-create-saved-search.js';
+import { NvDeleteListTool } from './tools/nv-delete-list.js';
+import { NvDeleteSavedSearchTool } from './tools/nv-delete-saved-search.js';
 import { NvFetchCompanyTool } from './tools/nv-fetch-company.js';
 import { NvFetchPersonTool } from './tools/nv-fetch-person.js';
 import { NvGetConversationTool } from './tools/nv-get-conversation.js';
 import { NvManageConversationTool } from './tools/nv-manage-conversation.js';
+import { NvRemoveAccountFromListTool } from './tools/nv-remove-account-from-list.js';
+import { NvRemoveLeadFromListTool } from './tools/nv-remove-lead-from-list.js';
+import { NvRenameListTool } from './tools/nv-rename-list.js';
 import { NvRetrieveAlertsTool } from './tools/nv-retrieve-alerts.js';
+import { NvRetrieveListAccountsTool } from './tools/nv-retrieve-list-accounts.js';
+import { NvRetrieveListLeadsTool } from './tools/nv-retrieve-list-leads.js';
+import { NvRetrieveListsTool } from './tools/nv-retrieve-lists.js';
+import { NvRetrieveSavedSearchesTool } from './tools/nv-retrieve-saved-searches.js';
+import { NvSaveAccountTool } from './tools/nv-save-account.js';
+import { NvSaveLeadTool } from './tools/nv-save-lead.js';
 import { NvSearchCompaniesTool } from './tools/nv-search-companies.js';
 import { NvSearchPeopleTool } from './tools/nv-search-people.js';
 import { NvSendMessageTool } from './tools/nv-send-message.js';
 import { NvSyncConversationTool } from './tools/nv-sync-conversation.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
+import { NvUnsaveAccountTool } from './tools/nv-unsave-account.js';
+import { NvUnsaveLeadTool } from './tools/nv-unsave-lead.js';
 import { ReactToCommentTool } from './tools/react-to-comment.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
@@ -138,6 +153,21 @@ export class LinkedApiTools {
       new NvGetConversationTool(),
       new NvManageConversationTool(),
       new NvRetrieveAlertsTool(),
+      new NvRetrieveListsTool(),
+      new NvDeleteListTool(),
+      new NvCreateListTool(),
+      new NvDeleteSavedSearchTool(),
+      new NvCreateSavedSearchTool(),
+      new NvRetrieveSavedSearchesTool(),
+      new NvRenameListTool(),
+      new NvRemoveAccountFromListTool(),
+      new NvRemoveLeadFromListTool(),
+      new NvRetrieveListAccountsTool(),
+      new NvRetrieveListLeadsTool(),
+      new NvUnsaveAccountTool(),
+      new NvSaveAccountTool(),
+      new NvUnsaveLeadTool(),
+      new NvSaveLeadTool(),
       new NvSearchCompaniesTool(),
       new NvSearchPeopleTool(),
       new NvFetchCompanyTool(),

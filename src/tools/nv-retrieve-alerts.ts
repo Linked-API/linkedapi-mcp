@@ -12,6 +12,11 @@ export class NvRetrieveAlertsTool extends OperationTool<TNvRetrieveAlertsParams,
     sort: z.enum(['latest', 'relevance']).optional(),
     filter: z
       .object({
+        listId: z
+          .string()
+          .regex(/^[1-9]\d*$/)
+          .optional(),
+        subjects: z.array(z.string()).optional(),
         category: z.enum(['lead', 'account']).optional(),
         types: z.array(z.string()).optional(),
         since: z.iso.datetime({ offset: true }).optional(),
@@ -44,6 +49,17 @@ export class NvRetrieveAlertsTool extends OperationTool<TNvRetrieveAlertsParams,
           filter: {
             type: 'object',
             properties: {
+              listId: {
+                type: 'string',
+                pattern: '^[1-9]\\d*$',
+                description: 'Owned list ID. Requires latest sort. ANDed with the other filters.',
+              },
+              subjects: {
+                type: 'array',
+                items: { type: 'string' },
+                description:
+                  'OR of recognised hashed URLs or Sales Navigator subject URNs; empty is unrestricted. Public handles cannot resolve subject identities. Other filters are ANDed.',
+              },
               category: {
                 type: 'string',
                 enum: ['lead', 'account'],
