@@ -19,7 +19,7 @@ export class NvRemoveAccountFromListTool extends OperationTool<
     return {
       name: this.name,
       description:
-        'Remove an account from exactly one owned custom list, keeping it saved even after its last list. Repeating an absent membership succeeds. English interface only. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRemoveAccountFromList.',
+        'Remove an account from exactly one owned custom list, keeping it saved even after its last list. Repeating an absent membership succeeds. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRemoveAccountFromList.',
       inputSchema: {
         type: 'object',
         properties: {

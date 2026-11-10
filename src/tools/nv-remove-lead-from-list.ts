@@ -16,7 +16,7 @@ export class NvRemoveLeadFromListTool extends OperationTool<TNvRemoveLeadFromLis
     return {
       name: this.name,
       description:
-        'Remove a lead from exactly one owned custom list, keeping it saved and in its other lists. Repeating an absent membership succeeds. English interface only. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRemoveLeadFromList.',
+        'Remove a lead from exactly one owned custom list, keeping it saved and in its other lists. Repeating an absent membership succeeds. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRemoveLeadFromList.',
       inputSchema: {
         type: 'object',
         properties: {

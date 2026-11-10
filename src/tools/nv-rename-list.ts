@@ -21,7 +21,7 @@ export class NvRenameListTool extends OperationTool<TNvRenameListParams, TNvCrea
     return {
       name: this.name,
       description:
-        'Rename an owned custom list. Trimmed name: 1–75 characters, no line breaks. Same name succeeds; duplicates return listAlreadyExists and system lists return listNotRenamable. Returns the renamed list with its id, name, type and url. English interface only. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRenameList.',
+        'Rename an owned custom list. Trimmed name: 1–75 characters, no line breaks. Same name succeeds; duplicates return listAlreadyExists and system lists return listNotRenamable. Returns the renamed list with its id, name, type and url. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvRenameList.',
       inputSchema: {
         type: 'object',
         properties: {

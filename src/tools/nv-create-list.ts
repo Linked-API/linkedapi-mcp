@@ -17,7 +17,7 @@ export class NvCreateListTool extends OperationTool<TNvCreateListParams, TNvCrea
     return {
       name: this.name,
       description:
-        'Plus-only root action nv.createList. Create an owned lead or account list. Name is trimmed (1–75 characters). Optional description has surrounding spaces trimmed, allows up to 350 characters after trimming, and is omitted when blank. Same-type names equal after trimming, case-sensitive, including system lists, return listAlreadyExists and create nothing. Final data is { id: string, name, type, url }. English interface only; errors also include interfaceLanguageNotSupported, noSalesNavigator and unexpectedError. Returns a workflow acknowledgement; use get_workflow_result with operationName nvCreateList.',
+        'Plus-only root action nv.createList. Create an owned lead or account list. Name is trimmed (1–75 characters). Optional description has surrounding spaces trimmed, allows up to 350 characters after trimming, and is omitted when blank. Same-type names equal after trimming, case-sensitive, including system lists, return listAlreadyExists and create nothing. Final data is { id: string, name, type, url }. Errors also include noSalesNavigator and unexpectedError. Returns a workflow acknowledgement; use get_workflow_result with operationName nvCreateList.',
       inputSchema: {
         type: 'object',
         properties: {

@@ -15,7 +15,7 @@ export class NvDeleteListTool extends OperationTool<TNvDeleteListParams, void> {
     return {
       name: this.name,
       description:
-        'Plus-only root action nv.deleteList. Delete one owned list by string listId, keeping members saved and in their other lists. Unknown, shared or already-deleted IDs return listNotFound; system lists without a Delete action return listNotDeletable. Success has no result data. English interface only; errors also include interfaceLanguageNotSupported, noSalesNavigator and unexpectedError. Returns a workflow acknowledgement; use get_workflow_result with operationName nvDeleteList.',
+        'Plus-only root action nv.deleteList. Delete one owned list by string listId, keeping members saved and in their other lists. Unknown, shared or already-deleted IDs return listNotFound; system lists without a Delete action return listNotDeletable. Success has no result data. Errors also include noSalesNavigator and unexpectedError. Returns a workflow acknowledgement; use get_workflow_result with operationName nvDeleteList.',
       inputSchema: {
         type: 'object',
         properties: {

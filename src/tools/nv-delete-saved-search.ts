@@ -15,7 +15,7 @@ export class NvDeleteSavedSearchTool extends OperationTool<TNvDeleteSavedSearchP
     return {
       name: this.name,
       description:
-        'Delete an owned saved search by its string ID. An absent search returns savedSearchNotFound. English interface only. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvDeleteSavedSearch.',
+        'Delete an owned saved search by its string ID. An absent search returns savedSearchNotFound. Plus required. Returns a workflow acknowledgement; use get_workflow_result with operationName nvDeleteSavedSearch.',
       inputSchema: {
         type: 'object',
         properties: {
