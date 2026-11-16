@@ -63,6 +63,16 @@ import { NvSyncConversationTool } from './tools/nv-sync-conversation.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { NvUnsaveAccountTool } from './tools/nv-unsave-account.js';
 import { NvUnsaveLeadTool } from './tools/nv-unsave-lead.js';
+import { RcArchiveProjectTool } from './tools/rc-archive-project.js';
+import { RcCreateProjectTool } from './tools/rc-create-project.js';
+import { RcFetchPersonTool } from './tools/rc-fetch-person.js';
+import { RcRenameProjectTool } from './tools/rc-rename-project.js';
+import { RcRetrieveProjectCandidatesTool } from './tools/rc-retrieve-project-candidates.js';
+import { RcRetrieveProjectsTool } from './tools/rc-retrieve-projects.js';
+import { RcSaveToProjectTool } from './tools/rc-save-to-project.js';
+import { RcSearchPeopleTool } from './tools/rc-search-people.js';
+import { RcSendMessageTool } from './tools/rc-send-message.js';
+import { RcSyncInboxTool } from './tools/rc-sync-inbox.js';
 import { ReactToCommentTool } from './tools/react-to-comment.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
@@ -172,6 +182,16 @@ export class LinkedApiTools {
       new NvSearchPeopleTool(),
       new NvFetchCompanyTool(),
       new NvFetchPersonTool(),
+      new RcSearchPeopleTool(),
+      new RcFetchPersonTool(),
+      new RcRetrieveProjectsTool(),
+      new RcRetrieveProjectCandidatesTool(),
+      new RcSaveToProjectTool(),
+      new RcCreateProjectTool(),
+      new RcRenameProjectTool(),
+      new RcArchiveProjectTool(),
+      new RcSendMessageTool(),
+      new RcSyncInboxTool(),
       // Other tools
       new ExecuteCustomWorkflowTool(),
       new GetWorkflowResultTool(),
