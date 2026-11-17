@@ -23,6 +23,8 @@ import { CheckConnectionStatusTool } from './tools/check-connection-status.js';
 import { CommentOnPostTool } from './tools/comment-on-post.js';
 import { CreatePostTool } from './tools/create-post.js';
 import { CreateRepostTool } from './tools/create-repost.js';
+import { CreateSignalTool } from './tools/create-signal.js';
+import { DeleteSignalTool } from './tools/delete-signal.js';
 import { EndorsePersonSkillTool } from './tools/endorse-person-skill.js';
 import { EndorsePersonSkillsTool } from './tools/endorse-person-skills.js';
 import { ExecuteCustomWorkflowTool } from './tools/execute-custom-workflow.js';
@@ -35,6 +37,9 @@ import { GetChangelogTool } from './tools/get-changelog.js';
 import { GetConversationTool } from './tools/get-conversation.js';
 import { GetInboxTool } from './tools/get-inbox.js';
 import { GetNetworkTool } from './tools/get-network.js';
+import { GetSignalEventsTool } from './tools/get-signal-events.js';
+import { GetSignalTool } from './tools/get-signal.js';
+import { GetSignalsTool } from './tools/get-signals.js';
 import { GetWorkflowResultTool } from './tools/get-workflow-result.js';
 import { IgnoreInvitationTool } from './tools/ignore-invitation.js';
 import { ManageConversationTool } from './tools/manage-conversation.js';
@@ -63,6 +68,7 @@ import { NvSyncConversationTool } from './tools/nv-sync-conversation.js';
 import { NvSyncInboxTool } from './tools/nv-sync-inbox.js';
 import { NvUnsaveAccountTool } from './tools/nv-unsave-account.js';
 import { NvUnsaveLeadTool } from './tools/nv-unsave-lead.js';
+import { PauseSignalTool } from './tools/pause-signal.js';
 import { RcArchiveProjectTool } from './tools/rc-archive-project.js';
 import { RcCreateProjectTool } from './tools/rc-create-project.js';
 import { RcFetchPersonTool } from './tools/rc-fetch-person.js';
@@ -77,6 +83,7 @@ import { ReactToCommentTool } from './tools/react-to-comment.js';
 import { ReactToPostTool } from './tools/react-to-post.js';
 import { RemoveConnectionTool } from './tools/remove-connection.js';
 import { ReplyToCommentTool } from './tools/reply-to-comment.js';
+import { ResumeSignalTool } from './tools/resume-signal.js';
 import { RetrieveConnectionsTool } from './tools/retrieve-connections.js';
 import { RetrieveFeedTool } from './tools/retrieve-feed.js';
 import { RetrieveInvitationsTool } from './tools/retrieve-invitations.js';
@@ -192,6 +199,14 @@ export class LinkedApiTools {
       new RcArchiveProjectTool(),
       new RcSendMessageTool(),
       new RcSyncInboxTool(),
+      // Signal tools
+      new CreateSignalTool(),
+      new GetSignalsTool(),
+      new GetSignalTool(),
+      new PauseSignalTool(),
+      new ResumeSignalTool(),
+      new DeleteSignalTool(),
+      new GetSignalEventsTool(),
       // Other tools
       new ExecuteCustomWorkflowTool(),
       new GetWorkflowResultTool(),

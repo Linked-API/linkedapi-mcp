@@ -16,6 +16,13 @@ const NON_WORKFLOW_TOOL_NAMES = new Set<string>([
   'get_workflow_result',
   'get_api_usage',
   'send_feedback',
+  'create_signal',
+  'get_signals',
+  'get_signal',
+  'pause_signal',
+  'resume_signal',
+  'delete_signal',
+  'get_signal_events',
 ] as const);
 
 interface TExecuteWithTokensOptions extends TLinkedApiConfig {
