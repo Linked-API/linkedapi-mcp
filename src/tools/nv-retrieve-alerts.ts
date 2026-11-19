@@ -58,7 +58,7 @@ export class NvRetrieveAlertsTool extends OperationTool<TNvRetrieveAlertsParams,
                 type: 'array',
                 items: { type: 'string' },
                 description:
-                  'OR of recognised hashed URLs or Sales Navigator subject URNs; empty is unrestricted. Public handles cannot resolve subject identities. Other filters are ANDed.',
+                  'OR of recognised hashed URLs, Sales Navigator subject URNs, or urn:li:member:<id> / urn:li:organization:<id> as the urn of nv_retrieve_list_leads and nv_retrieve_list_accounts; empty is unrestricted. Public handles cannot resolve subject identities. Other filters are ANDed.',
               },
               category: {
                 type: 'string',
