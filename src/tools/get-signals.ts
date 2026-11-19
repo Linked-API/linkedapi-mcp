@@ -37,7 +37,7 @@ export class GetSignalsTool extends LinkedApiTool<TGetSignalsParams, TGetSignals
     return {
       name: this.name,
       description:
-        "List the account's signals (created with create_signal). Each signal has id (pass it as signalId to the other signal tools), type, its target fields, label, status, stoppedReason, createdAt, baselineAt (when the first check completed, or null until then), lastCheckedAt and nextCheckAt (the planned next check, or null when the signal is not active; your workflows and working hours can move it). status is active (checked on schedule), paused, or stopped: Linked API stopped checking because the target can no longer be watched, and stoppedReason is targetNotFound or watchPeriodEnded. A stopped signal cannot be resumed; delete it and create it again.",
+        "List the account's signals (created with create_signal). Each signal has id (pass it as signalId to the other signal tools), type, its target fields, label, status, stoppedReason, createdAt, baselineAt (when the first check completed, or null until then), lastCheckedAt and nextCheckAt (the planned next check, or null when the signal is not active; your workflows and working hours can move it). status is active (checked on schedule), paused, or stopped: Linked API stopped checking because the target can no longer be watched, and stoppedReason is targetNotFound, watchPeriodEnded, noSalesNavigator (a listAlerts account without an active Sales Navigator subscription) or listTooLarge (a listAlerts list too large to watch). A stopped signal cannot be resumed; delete it and create it again.",
       inputSchema: {
         type: 'object',
         properties: {
